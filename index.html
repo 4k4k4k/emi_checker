@@ -54,6 +54,11 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
+    .btns {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
     button {
       background-color: #1a73e8;
       color: white;
@@ -88,7 +93,10 @@
     <div class="step active" id="step1">
       <h3>Select Your Current Bank</h3>
       <div id="bankOptions" class="options"></div>
-      <button onclick="nextStep(1)">Next</button>
+      <div class="btns">
+        <button disabled>Back</button>
+        <button onclick="nextStep(1)">Next</button>
+      </div>
     </div>
 
     <div class="step" id="step2">
@@ -104,31 +112,46 @@
         <option value="801-825">801 - 825</option>
         <option value="825+">825+</option>
       </select>
-      <button onclick="nextStep(2)">Next</button>
+      <div class="btns">
+        <button onclick="backStep(2)">Back</button>
+        <button onclick="nextStep(2)">Next</button>
+      </div>
     </div>
 
     <div class="step" id="step3">
       <h3>Enter Your Current Rate of Interest (%)</h3>
       <input type="number" id="roiInput" step="0.01" placeholder="e.g. 9.25">
-      <button onclick="nextStep(3)">Next</button>
+      <div class="btns">
+        <button onclick="backStep(3)">Back</button>
+        <button onclick="nextStep(3)">Next</button>
+      </div>
     </div>
 
     <div class="step" id="step4">
       <h3>Enter Your Loan Amount Remaining (in ₹ Lakhs)</h3>
       <input type="number" id="loanAmountFloat" step="0.1" placeholder="e.g. 58.5">
-      <button onclick="nextStep(4)">Next</button>
+      <div class="btns">
+        <button onclick="backStep(4)">Back</button>
+        <button onclick="nextStep(4)">Next</button>
+      </div>
     </div>
 
     <div class="step" id="step5">
       <h3>Enter Tenure Remaining (in Years)</h3>
       <input type="number" id="tenureFloat" step="0.1" placeholder="e.g. 12.5">
-      <button onclick="nextStep(5)">Next</button>
+      <div class="btns">
+        <button onclick="backStep(5)">Back</button>
+        <button onclick="nextStep(5)">Next</button>
+      </div>
     </div>
 
     <div class="step" id="step6">
       <h3>Select Your Property's Khata Type</h3>
       <div id="khataSelect" class="options"></div>
-      <button onclick="calculateEMI()">Show My Savings</button>
+      <div class="btns">
+        <button onclick="backStep(6)">Back</button>
+        <button onclick="calculateEMI()">Show My Savings</button>
+      </div>
     </div>
   </div>
 
@@ -163,7 +186,6 @@
           const bankData = results.data.filter(row => row["Bank"]);
           window.bankData = bankData;
           let khatas = [...new Set(bankData.map(row => row["Khata Type"]).filter(Boolean))];
-
           if (khatas.length === 0) khatas = fallbackKhatas;
 
           const khataSelect = document.getElementById("khataSelect");
@@ -180,6 +202,11 @@
     function nextStep(current) {
       document.getElementById(`step${current}`).classList.remove("active");
       document.getElementById(`step${current + 1}`).classList.add("active");
+    }
+
+    function backStep(current) {
+      document.getElementById(`step${current}`).classList.remove("active");
+      document.getElementById(`step${current - 1}`).classList.add("active");
     }
 
     function calculateEMI() {
