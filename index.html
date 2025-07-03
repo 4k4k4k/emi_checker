@@ -172,7 +172,17 @@
     <button>Submit</button>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js">function nextStep(current) {
+  document.getElementById(`step${current}`).classList.remove("active");
+  document.getElementById(`step${current + 1}`).classList.add("active");
+}
+
+function backStep(current) {
+  document.getElementById(`step${current}`).classList.remove("active");
+  document.getElementById(`step${current - 1}`).classList.add("active");
+}
+
+</script>
   <script>
     const bankList = ["SBI", "HDFC", "ICICI", "Axis Bank", "PNB", "Bank of Baroda", "Kotak Mahindra", "Yes Bank", "IDFC First", "IndusInd Bank", "Canara Bank"];
     const fallbackKhatas = ["A Khata", "B Khata", "E Khata (11/A)", "DC Converted", "Gram Panchayat", "Non-DC"];
