@@ -114,22 +114,14 @@
     </div>
 
     <div class="step" id="step4">
-      <h3>Select Your Loan Amount Remaining</h3>
-      <select id="loanAmountFloat">
-        <option value="30">Less than ₹30L</option>
-        <option value="50">₹30L - ₹75L</option>
-        <option value="90">More than ₹75L</option>
-      </select>
+      <h3>Enter Your Loan Amount Remaining (in ₹ Lakhs)</h3>
+      <input type="number" id="loanAmountFloat" step="0.1" placeholder="e.g. 58.5">
       <button onclick="nextStep(4)">Next</button>
     </div>
 
     <div class="step" id="step5">
-      <h3>Select Tenure Remaining (in Years)</h3>
-      <select id="tenureFloat">
-        <option value="9">Less than 10 years</option>
-        <option value="12">10 - 15 years</option>
-        <option value="20">More than 15 years</option>
-      </select>
+      <h3>Enter Tenure Remaining (in Years)</h3>
+      <input type="number" id="tenureFloat" step="0.1" placeholder="e.g. 12.5">
       <button onclick="nextStep(5)">Next</button>
     </div>
 
@@ -179,7 +171,6 @@
           khatas.forEach(khata => {
             const label = document.createElement("label");
             label.innerHTML = `<input type='radio' name='khata' value='${khata}'> ${khata}`;
-            label.classList.add("options");
             khataSelect.appendChild(label);
           });
         }
