@@ -8,47 +8,58 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+      color: #333;
       max-width: 600px;
       margin: 30px auto;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
     h1, h3 {
       text-align: center;
       color: #1a237e;
     }
-    .step {
-      display: none;
-    }
-    .step.active {
+    .step { display: none; }
+    .step.active { display: block; }
+    label {
       display: block;
+      margin-top: 15px;
+      font-weight: 600;
     }
     .options label {
       display: block;
-      margin-bottom: 10px;
       background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
       padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
       cursor: pointer;
+    }
+    .options input[type="radio"] { margin-right: 10px; }
+    select, input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
     .btns {
       display: flex;
       justify-content: space-between;
       margin-top: 20px;
     }
-    button {
+    .btns button {
       flex: 1;
-      margin: 5px;
       padding: 10px;
-      font-weight: bold;
-      background: #1a73e8;
+      font-size: 14px;
+      margin: 0 5px;
+      background-color: #1a73e8;
       color: white;
       border: none;
-      border-radius: 6px;
       cursor: pointer;
+      font-weight: bold;
     }
+    button:hover { background-color: #0d47a1; }
     #result, #callbackForm {
       display: none;
       margin-top: 30px;
@@ -97,7 +108,7 @@
     </div>
 
     <div class="step" id="step3">
-      <h3>Enter Current Rate of Interest (%)</h3>
+      <h3>Enter Your Current Rate of Interest (%)</h3>
       <input type="number" id="roiInput" step="0.01" placeholder="e.g. 9.25">
       <div class="btns">
         <button onclick="backStep(3)">←</button>
@@ -106,7 +117,7 @@
     </div>
 
     <div class="step" id="step4">
-      <h3>Enter Loan Amount Remaining (₹ Lakhs)</h3>
+      <h3>Enter Your Loan Amount Remaining (in ₹ Lakhs)</h3>
       <input type="number" id="loanAmountFloat" step="0.1" placeholder="e.g. 58.5">
       <div class="btns">
         <button onclick="backStep(4)">←</button>
@@ -142,14 +153,36 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
-    function nextStep(n) {
-      document.getElementById(`step${n}`).classList.remove("active");
-      document.getElementById(`step${n + 1}`).classList.add("active");
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRU3seRv9EqVmNvKM-nSQmYYJOMmdI1rhON8sAbirUPHMT2KKFCFWzRv2qvTMHaS458xSucuq33soUz/pub?output=csv';
+    const bankList = ["SBI", "HDFC", "ICICI", "Axis Bank", "PNB", "Bank of Baroda", "Kotak Mahindra", "Yes Bank", "IDFC First", "IndusInd Bank", "Canara Bank"];
+
+    window.onload = function () {
+      const bankOptions = document.getElementById("bankOptions");
+      bankList.forEach(bank => {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type='radio' name='bank' value='${bank}'> ${bank}`;
+        bankOptions.appendChild(label);
+      });
+
+      Papa.parse(sheetUrl, {
+        download: true,
+        header: true,
+        complete: function(results) {
+          window.bankData = results.data.filter(row => row["Bank"]);
+        }
+      });
+    };
+
+    function nextStep(current) {
+      document.getElementById(`step${current}`).classList.remove("active");
+      const next = document.getElementById(`step${current + 1}`);
+      if (next) next.classList.add("active");
     }
 
-    function backStep(n) {
-      document.getElementById(`step${n}`).classList.remove("active");
-      document.getElementById(`step${n - 1}`).classList.add("active");
+    function backStep(current) {
+      document.getElementById(`step${current}`).classList.remove("active");
+      const prev = document.getElementById(`step${current - 1}`);
+      if (prev) prev.classList.add("active");
     }
 
     function calculateEMI() {
@@ -163,55 +196,43 @@
       }
 
       const monthlyRate = roi / 1200;
-      const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) / 
-                  (Math.pow(1 + monthlyRate, tenure) - 1);
-
+      const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) / (Math.pow(1 + monthlyRate, tenure) - 1);
       document.getElementById("emiOutput").innerText = `Your current EMI: ₹${emi.toFixed(2)}`;
 
-      if (window.bankData && window.bankData.length > 0) {
-        const betterOptions = window.bankData
-          .filter(row => parseFloat(row["ROI"]) < roi && row["ROI"] !== "")
-          .sort((a, b) => parseFloat(a["ROI"]) - parseFloat(b["ROI"]));
+      const betterOptions = window.bankData
+        .filter(row => {
+          const rawRoi = (row["ROI"] || "").trim();
+          const parsed = parseFloat(rawRoi.replace('%', ''));
+          return !isNaN(parsed) && parsed < roi;
+        })
+        .sort((a, b) => {
+          const aRoi = parseFloat((a["ROI"] || "").replace('%',''));
+          const bRoi = parseFloat((b["ROI"] || "").replace('%',''));
+          return aRoi - bRoi;
+        });
 
-        const best = betterOptions[0];
-        if (best) {
-          const bestRoi = parseFloat(best["ROI"]);
-          const bestBank = best["Bank"];
-          const bestRate = bestRoi / 1200;
-          const bestEmi = (loanAmount * bestRate * Math.pow(1 + bestRate, tenure)) /
-                          (Math.pow(1 + bestRate, tenure) - 1);
-          const savings = (emi - bestEmi) * tenure;
+      const best = betterOptions[0];
+      if (best) {
+        const bestRoi = parseFloat(best["ROI"].replace('%',''));
+        const bestBank = best["Bank"];
+        const bestRate = bestRoi / 1200;
+        const bestEmi = (loanAmount * bestRate * Math.pow(1 + bestRate, tenure)) /
+                        (Math.pow(1 + bestRate, tenure) - 1);
+        const savings = (emi - bestEmi) * tenure;
 
-          document.getElementById("bestBankOutput").innerText = `Best offer: ${bestBank} @ ${bestRoi}%`;
-          document.getElementById("savingsOutput").innerText = `Total Savings: ₹${savings.toFixed(2)}`;
-          document.getElementById("reductionOutput").innerText = `Monthly Reduction: ₹${(emi - bestEmi).toFixed(2)}`;
-        }
+        document.getElementById("bestBankOutput").innerText = `Best offer: ${bestBank} @ ${bestRoi}%`;
+        document.getElementById("savingsOutput").innerText = `Total Savings: ₹${savings.toFixed(2)}`;
+        document.getElementById("reductionOutput").innerText = `Monthly Reduction: ₹${(emi - bestEmi).toFixed(2)}`;
+      } else {
+        document.getElementById("bestBankOutput").innerText = `No better offers found.`;
+        document.getElementById("savingsOutput").innerText = ``;
+        document.getElementById("reductionOutput").innerText = ``;
       }
 
       document.getElementById("formSteps").style.display = "none";
       document.getElementById("result").style.display = "block";
       document.getElementById("callbackForm").style.display = "block";
     }
-
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRU3seRv9EqVmNvKM-nSQmYYJOMmdI1rhON8sAbirUPHMT2KKFCFWzRv2qvTMHaS458xSucuq33soUz/pub?output=csv';
-    const bankList = ["SBI", "HDFC", "ICICI", "Axis Bank", "PNB", "Bank of Baroda", "Kotak Mahindra", "Yes Bank", "IDFC First", "IndusInd Bank"];
-
-    window.onload = function () {
-      const bankOptions = document.getElementById("bankOptions");
-      bankList.forEach(bank => {
-        const label = document.createElement("label");
-        label.innerHTML = `<input type='radio' name='bank' value='${bank}'> ${bank}`;
-        bankOptions.appendChild(label);
-      });
-
-      Papa.parse(sheetUrl, {
-        download: true,
-        header: true,
-        complete: function (results) {
-          window.bankData = results.data.filter(row => row["Bank"] && row["ROI"]);
-        }
-      });
-    };
   </script>
 </body>
 </html>
