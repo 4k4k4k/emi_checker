@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EMI Checker</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -32,6 +31,21 @@
       margin-top: 15px;
       font-weight: 600;
     }
+    .options {
+      margin-top: 10px;
+    }
+    .options label {
+      display: block;
+      background: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .options input[type="radio"] {
+      margin-right: 10px;
+    }
     select, input, button {
       width: 100%;
       padding: 12px;
@@ -51,19 +65,19 @@
     button:hover {
       background-color: #0d47a1;
     }
-    #result {
+    #result, #callbackForm {
+      display: none;
       margin-top: 30px;
       padding: 20px;
-      background: #e8f5e9;
-      border-left: 6px solid #2e7d32;
       border-radius: 8px;
     }
+    #result {
+      background: #e8f5e9;
+      border-left: 6px solid #2e7d32;
+    }
     #callbackForm {
-      margin-top: 30px;
       background: #fce4ec;
-      padding: 20px;
       border-left: 6px solid #ad1457;
-      border-radius: 8px;
     }
   </style>
 </head>
@@ -73,7 +87,7 @@
   <div id="formSteps">
     <div class="step active" id="step1">
       <label>1. Current Lending Bank</label>
-      <select id="bankSelect"></select>
+      <div class="options" id="bankOptions"></div>
       <button onclick="nextStep()">Next</button>
     </div>
 
@@ -118,8 +132,8 @@
     </div>
   </div>
 
-  <div id="result" class="hidden"></div>
-  <div id="callbackForm" class="hidden">
+  <div id="result"></div>
+  <div id="callbackForm">
     <h3>Request a Call Back</h3>
     <label>Your Name</label>
     <input type="text" id="userName" required>
@@ -131,45 +145,48 @@
   </div>
 
   <script>
+    const bankList = ["SBI", "HDFC", "ICICI", "Axis Bank", "PNB", "Bank of Baroda", "Kotak Mahindra", "Yes Bank", "IDFC First", "IndusInd Bank", "Canara Bank"];
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZVMhFCeAnYvW9_88jQll9skc_zRDnv-QO_FaPY0rDPpHBT20mcCR2XWzvKaos8X3RD5OH_Y83t1Z5/pub?output=csv';
     const formSubmitUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
     let currentStep = 1;
 
     function nextStep() {
       document.getElementById(`step${currentStep}`).classList.remove('active');
       currentStep++;
-      document.getElementById(`step${currentStep}`).classList.add('active');
+      const next = document.getElementById(`step${currentStep}`);
+      if (next) next.classList.add('active');
     }
 
-    Papa.parse(sheetUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const bankData = results.data.filter(row => row["Bank"]);
-        window.bankData = bankData;
-        const banks = [...new Set(bankData.map(row => row["Bank"]).filter(Boolean))];
-        const khatas = [...new Set(bankData.map(row => row["Khata Type"]).filter(Boolean))];
+    window.onload = function() {
+      const bankOptions = document.getElementById("bankOptions");
+      bankList.forEach((bank, i) => {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type='radio' name='bank' value='${bank}'> ${bank}`;
+        bankOptions.appendChild(label);
+      });
 
-        const bankSelect = document.getElementById("bankSelect");
-        bankSelect.innerHTML = '';
-        banks.forEach(bank => {
-          const opt = document.createElement("option");
-          opt.value = opt.text = bank;
-          bankSelect.add(opt);
-        });
+      Papa.parse(sheetUrl, {
+        download: true,
+        header: true,
+        complete: function(results) {
+          const bankData = results.data.filter(row => row["Bank"]);
+          window.bankData = bankData;
+          const khatas = [...new Set(bankData.map(row => row["Khata Type"]).filter(Boolean))];
 
-        const khataSelect = document.getElementById("khataSelect");
-        khataSelect.innerHTML = '';
-        khatas.forEach(khata => {
-          const opt = document.createElement("option");
-          opt.value = opt.text = khata;
-          khataSelect.add(opt);
-        });
-      }
-    });
+          const khataSelect = document.getElementById("khataSelect");
+          khataSelect.innerHTML = '';
+          khatas.forEach(khata => {
+            const opt = document.createElement("option");
+            opt.value = opt.text = khata;
+            khataSelect.add(opt);
+          });
+        }
+      });
+    }
 
     function calculateEMI() {
-      const selectedBank = document.getElementById("bankSelect").value;
+      const selectedBank = document.querySelector("input[name='bank']:checked")?.value;
       const creditScore = document.getElementById("creditScoreSelect").value;
       const currentROI = parseFloat(document.getElementById("roiInput").value);
       const loanAmount = parseFloat(document.getElementById("loanAmountFloat").value) * 100000;
@@ -196,9 +213,9 @@
         <p><b>New EMI:</b> ₹${newEMI.toFixed(2)}</p>
         <p><b>Total Savings:</b> ₹${savings.toFixed(2)}</p>
       `;
-      resultDiv.classList.remove('hidden');
-      document.getElementById("callbackForm").classList.remove('hidden');
       document.getElementById("formSteps").style.display = 'none';
+      resultDiv.style.display = 'block';
+      document.getElementById("callbackForm").style.display = 'block';
     }
 
     function submitCallbackRequest() {
