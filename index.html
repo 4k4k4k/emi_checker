@@ -152,15 +152,15 @@
 </div>
 
 
-  <div class="btns">
-    <button onclick="backStep(6)">←</button>
-    <button onclick="calculateEMI()">Show My Savings</button>
-  </div>
+  
 </div>
-
-  </div>
-
-  <div id="result"></div>
+<div id="result">
+  <h3>Results</h3>
+  <p id="emiOutput"></p>
+  <p id="bestBankOutput"></p>
+  <p id="savingsOutput"></p>
+  <p id="reductionOutput"></p>
+</div>
 
   <div id="callbackForm">
     <h3>Get a Call from Us</h3>
@@ -174,11 +174,49 @@
 <script>
 function nextStep(current) {
   document.getElementById(`step${current}`).classList.remove("active");
-  document.getElementById(`step${current + 1}`).classList.add("active");
+  const next = document.getElementById(`step${current + 1}`);
+  if (next) next.classList.add("active");
 }
 
 function backStep(current) {
   document.getElementById(`step${current}`).classList.remove("active");
+  const prev = document.getElementById(`step${current - 1}`);
+  if (prev) prev.classList.add("active");
+}
+
+function calculateEMI() {
+  const bank = document.querySelector('input[name="bank"]:checked')?.value;
+  const creditScore = document.getElementById("creditScoreSelect").value;
+  const roi = parseFloat(document.getElementById("roiInput").value);
+  const loanAmount = parseFloat(document.getElementById("loanAmountFloat").value) * 100000;
+  const tenure = parseFloat(document.getElementById("tenureFloat").value) * 12;
+
+  const monthlyRate = roi / 1200;
+  const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) / (Math.pow(1 + monthlyRate, tenure) - 1);
+
+  const best = window.bankData.find(row => parseFloat(row["ROI"]) < roi);
+  if (best) {
+    const bestRoi = parseFloat(best["ROI"]);
+    const bestBank = best["Bank"];
+    const bestRate = bestRoi / 1200;
+    const bestEmi = (loanAmount * bestRate * Math.pow(1 + bestRate, tenure)) / (Math.pow(1 + bestRate, tenure) - 1);
+    const savings = (emi - bestEmi) * tenure;
+
+    document.getElementById("emiOutput").innerText = `Your current EMI: ₹${emi.toFixed(2)}`;
+    document.getElementById("bestBankOutput").innerText = `Best offer from: ${bestBank} at ${bestRoi}%`;
+    document.getElementById("savingsOutput").innerText = `Total savings over tenure: ₹${savings.toFixed(2)}`;
+    document.getElementById("reductionOutput").innerText = `Monthly EMI can reduce by: ₹${(emi - bestEmi).toFixed(2)}`;
+  } else {
+    document.getElementById("emiOutput").innerText = `Your current EMI: ₹${emi.toFixed(2)}`;
+    document.getElementById("bestBankOutput").innerText = `No better offers found.`;
+    document.getElementById("savingsOutput").innerText = ``;
+    document.getElementById("reductionOutput").innerText = ``;
+  }
+
+  document.getElementById("formSteps").style.display = "none";
+  document.getElementById("result").style.display = "block";
+  document.getElementById("callbackForm").style.display = "block";
+}`).classList.remove("active");
   document.getElementById(`step${current - 1}`).classList.add("active");
 }
 </script>
