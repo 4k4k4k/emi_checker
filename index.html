@@ -100,7 +100,7 @@
       <h3>Select Your Current Bank</h3>
       <div id="bankOptions" class="options"></div>
       <div class="btns">
-        <span></span>
+        
         <button onclick="nextStep(1)">Next</button>
       </div>
     </div>
@@ -150,9 +150,13 @@
     <button onclick="nextStep(5)">Next</button>
   </div>
 </div>
-
-
-  
+<div class="step" id="step5">
+  <h3>Enter Tenure Remaining (in Years)</h3>
+  <input type="number" id="tenureFloat" step="0.1" placeholder="e.g. 12.5">
+  <div class="btns">
+    <button onclick="backStep(5)">←</button>
+    <button onclick="calculateEMI()">Show My Savings</button>
+  </div>
 </div>
 <div id="result">
   <h3>Results</h3>
@@ -216,8 +220,7 @@ function calculateEMI() {
   document.getElementById("formSteps").style.display = "none";
   document.getElementById("result").style.display = "block";
   document.getElementById("callbackForm").style.display = "block";
-}`).classList.remove("active");
-  document.getElementById(`step${current - 1}`).classList.add("active");
+
 }
 </script>
   <script>
