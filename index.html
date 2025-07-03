@@ -182,11 +182,11 @@
     }
 
     function validateStep1() {
-      const selected = document.querySelector("input[name='bank']:checked");
-      if (!selected) {
-        alert("Please select your bank.");
-      } else {
+      const bankSelected = document.querySelector('input[name="bank"]:checked');
+      if (bankSelected) {
         nextStep(1);
+      } else {
+        alert('Please select your bank.');
       }
     }
 
@@ -202,29 +202,37 @@
       const loanAmount = parseFloat(document.getElementById("loanAmountFloat").value) * 100000;
       const tenure = parseFloat(document.getElementById("tenureFloat").value) * 12;
 
+      console.log("Inputs → ROI:", roi, "Loan:", loanAmount, "Tenure:", tenure);
+
       if (!roi || !loanAmount || !tenure) {
         alert("Please fill all fields correctly.");
         return;
       }
 
       const monthlyRate = roi / 1200;
-      const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) / (Math.pow(1 + monthlyRate, tenure) - 1);
+      const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) /
+                  (Math.pow(1 + monthlyRate, tenure) - 1);
 
-      const best = window.bankData.find(row => parseFloat(row["ROI"]) < roi);
+      const best = window.bankData.find(row => {
+        const r = parseFloat(row["ROI"]);
+        return r > 0 && r < roi;
+      });
+
+      document.getElementById("emiOutput").innerText = `Your current EMI: ₹${emi.toFixed(2)}`;
+
       if (best) {
         const bestRoi = parseFloat(best["ROI"]);
         const bestBank = best["Bank"];
         const bestRate = bestRoi / 1200;
-        const bestEmi = (loanAmount * bestRate * Math.pow(1 + bestRate, tenure)) / (Math.pow(1 + bestRate, tenure) - 1);
+        const bestEmi = (loanAmount * bestRate * Math.pow(1 + bestRate, tenure)) /
+                        (Math.pow(1 + bestRate, tenure) - 1);
         const savings = (emi - bestEmi) * tenure;
 
-        document.getElementById("emiOutput").innerText = `Your current EMI: ₹${emi.toFixed(2)}`;
         document.getElementById("bestBankOutput").innerText = `Best offer from: ${bestBank} at ${bestRoi}%`;
         document.getElementById("savingsOutput").innerText = `Total savings over tenure: ₹${savings.toFixed(2)}`;
         document.getElementById("reductionOutput").innerText = `Monthly EMI can reduce by: ₹${(emi - bestEmi).toFixed(2)}`;
       } else {
-        document.getElementById("emiOutput").innerText = `Your current EMI: ₹${emi.toFixed(2)}`;
-        document.getElementById("bestBankOutput").innerText = `No better offers found.`;
+        document.getElementById("bestBankOutput").innerText = `No better offer found in our list.`;
         document.getElementById("savingsOutput").innerText = ``;
         document.getElementById("reductionOutput").innerText = ``;
       }
@@ -237,7 +245,7 @@
     const bankList = ["SBI", "HDFC", "ICICI", "Axis Bank", "PNB", "Bank of Baroda", "Kotak Mahindra", "Yes Bank", "IDFC First", "IndusInd Bank", "Canara Bank"];
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZVMhFCeAnYvW9_88jQll9skc_zRDnv-QO_FaPY0rDPpHBT20mcCR2XWzvKaos8X3RD5OH_Y83t1Z5/pub?output=csv';
 
-    window.onload = function () {
+    window.onload = function() {
       const bankOptions = document.getElementById("bankOptions");
       bankList.forEach(bank => {
         const label = document.createElement("label");
@@ -248,7 +256,7 @@
       Papa.parse(sheetUrl, {
         download: true,
         header: true,
-        complete: function (results) {
+        complete: function(results) {
           const bankData = results.data.filter(row => row["Bank"]);
           window.bankData = bankData;
           console.log('Loaded data:', bankData);
