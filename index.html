@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMI Checker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    select, input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+    #result {
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Check for Better EMI</h1>
+
+  <label>1. Current Lending Bank</label>
+  <select id="bankSelect"></select>
+
+  <label>2. Credit Score</label>
+  <select id="creditScoreSelect">
+    <option value="625-650">625–650</option>
+    <option value="651-675">651–675</option>
+    <option value="676-700">676–700</option>
+    <option value="701-725">701–725</option>
+    <option value="726-750">726–750</option>
+    <option value="751-775">751–775</option>
+    <option value="776-800">776–800</option>
+    <option value="801-825">801–825</option>
+    <option value="825+">825+</option>
+  </select>
+
+  <label>3. Current Rate of Interest (%)</label>
+  <input type="number" step="0.01" id="roiInput">
+
+  <label>4. Loan Amount Remaining</label>
+  <select id="loanAmount">
+    <option value="<30">&lt;30L</option>
+    <option value="30-75">30L–75L</option>
+    <option value=">75">&gt;75L</option>
+  </select>
+
+  <label>5. Tenure Remaining</label>
+  <select id="tenure">
+    <option value="<10">&lt;10 years</option>
+    <option value="10-15">10–15 years</option>
+    <option value=">15">&gt;15 years</option>
+  </select>
+
+  <label>6. Khata Type</label>
+  <select id="khataSelect"></select>
+
+  <button onclick="calculateEMI()">Check Best Deal</button>
+
+  <div id="result" class="hidden"></div>
+
+  <div id="callbackForm" class="hidden">
+    <h3>Request a Call Back</h3>
+    <label>Your Name</label>
+    <input type="text" id="userName" required>
+    <label>Your Email</label>
+    <input type="email" id="userEmail" required>
+    <label>Your Phone Number</label>
+    <input type="tel" id="userPhone" required>
+    <button onclick="submitCallbackRequest()">Submit</button>
+  </div>
+
+  <script>
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZVMhFCeAnYvW9_88jQll9skc_zRDnv-QO_FaPY0rDPpHBT20mcCR2XWzvKaos8X3RD5OH_Y83t1Z5/pub?output=csv';
+    const formSubmitUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // Replace with your actual Apps Script URL
+
+    let bankData = [];
+
+    Papa.parse(sheetUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        bankData = results.data.filter(row => row["Bank"]);
+        const banks = [...new Set(bankData.map(row => row["Bank"]))];
+        const khatas = [...new Set(bankData.map(row => row["Khata Type"]).filter(Boolean))];
+
+        const bankSelect = document.getElementById("bankSelect");
+        banks.forEach(bank => {
+          const opt = document.createElement("option");
+          opt.value = opt.text = bank;
+          bankSelect.add(opt);
+        });
+
+        const khataSelect = document.getElementById("khataSelect");
+        khatas.forEach(khata => {
+          const opt = document.createElement("option");
+          opt.value = opt.text = khata;
+          khataSelect.add(opt);
+        });
+      }
+    });
+
+    function calculateEMI() {
+      const selectedBank = document.getElementById("bankSelect").value;
+      const creditScore = document.getElementById("creditScoreSelect").value;
+      const currentROI = parseFloat(document.getElementById("roiInput").value);
+      const loanAmountBracket = document.getElementById("loanAmount").value;
+      const tenureBracket = document.getElementById("tenure").value;
+      const khataType = document.getElementById("khataSelect").value;
+
+      const matchingBanks = bankData.filter(row => row["Khata Type"] === khataType);
+      const lowestRateBank = matchingBanks.reduce((min, row) => {
+        const roi = parseFloat(row["Rate of Interest"].replace('%', ''));
+        return (roi < min.roi) ? { bank: row["Bank"], roi: roi } : min;
+      }, { bank: null, roi: Infinity });
+
+      const resultDiv = document.getElementById("result");
+      const dummyLoanAmount = 1000000; // Assume 10L
+      const dummyTenureYears = 15; // Assume 15y
+      const months = dummyTenureYears * 12;
+
+      const currentEMI = (dummyLoanAmount * currentROI/1200) / (1 - Math.pow(1 + currentROI/1200, -months));
+      const newEMI = (dummyLoanAmount * lowestRateBank.roi/1200) / (1 - Math.pow(1 + lowestRateBank.roi/1200, -months));
+      const savings = (currentEMI - newEMI) * months;
+
+      resultDiv.innerHTML = `
+        <h3>Your Result</h3>
+        <p><b>Current EMI:</b> ₹${currentEMI.toFixed(2)}</p>
+        <p><b>Best Available Bank:</b> ${lowestRateBank.bank}</p>
+        <p><b>New EMI:</b> ₹${newEMI.toFixed(2)}</p>
+        <p><b>Total Savings:</b> ₹${savings.toFixed(2)}</p>
+      `;
+      resultDiv.classList.remove('hidden');
+      document.getElementById("callbackForm").classList.remove('hidden');
+    }
+
+    function submitCallbackRequest() {
+      const name = document.getElementById("userName").value;
+      const email = document.getElementById("userEmail").value;
+      const phone = document.getElementById("userPhone").value;
+
+      const formData = new FormData();
+      formData.append("Name", name);
+      formData.append("Email", email);
+      formData.append("Phone", phone);
+
+      fetch(formSubmitUrl, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        alert("Thank you! Your request has been submitted.");
+      })
+      .catch(error => {
+        alert("Error submitting the form.");
+      });
+    }
+  </script>
+</body>
+</html>
