@@ -7,73 +7,118 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+      color: #333;
       max-width: 600px;
-      margin: auto;
-      padding: 20px;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1, h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #1a237e;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
     }
     label {
       display: block;
       margin-top: 15px;
+      font-weight: 600;
     }
     select, input, button {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #0d47a1;
     }
     #result {
       margin-top: 30px;
       padding: 20px;
-      border: 1px solid #ddd;
+      background: #e8f5e9;
+      border-left: 6px solid #2e7d32;
+      border-radius: 8px;
     }
-    .hidden {
-      display: none;
+    #callbackForm {
+      margin-top: 30px;
+      background: #fce4ec;
+      padding: 20px;
+      border-left: 6px solid #ad1457;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <h1>Check for Better EMI</h1>
+  <h1>Still Paying High EMI?</h1>
 
-  <label>1. Current Lending Bank</label>
-  <select id="bankSelect"></select>
+  <div id="formSteps">
+    <div class="step active" id="step1">
+      <label>1. Current Lending Bank</label>
+      <select id="bankSelect"></select>
+      <button onclick="nextStep()">Next</button>
+    </div>
 
-  <label>2. Credit Score</label>
-  <select id="creditScoreSelect">
-    <option value="625-650">625–650</option>
-    <option value="651-675">651–675</option>
-    <option value="676-700">676–700</option>
-    <option value="701-725">701–725</option>
-    <option value="726-750">726–750</option>
-    <option value="751-775">751–775</option>
-    <option value="776-800">776–800</option>
-    <option value="801-825">801–825</option>
-    <option value="825+">825+</option>
-  </select>
+    <div class="step" id="step2">
+      <label>2. Credit Score</label>
+      <select id="creditScoreSelect">
+        <option value="625-650">625–650</option>
+        <option value="651-675">651–675</option>
+        <option value="676-700">676–700</option>
+        <option value="701-725">701–725</option>
+        <option value="726-750">726–750</option>
+        <option value="751-775">751–775</option>
+        <option value="776-800">776–800</option>
+        <option value="801-825">801–825</option>
+        <option value="825+">825+</option>
+      </select>
+      <button onclick="nextStep()">Next</button>
+    </div>
 
-  <label>3. Current Rate of Interest (%)</label>
-  <input type="number" step="0.01" id="roiInput">
+    <div class="step" id="step3">
+      <label>3. Current Rate of Interest (%)</label>
+      <input type="number" step="0.01" id="roiInput" placeholder="e.g., 9.25">
+      <button onclick="nextStep()">Next</button>
+    </div>
 
-  <label>4. Loan Amount Remaining</label>
-  <select id="loanAmount">
-    <option value="<30">&lt;30L</option>
-    <option value="30-75">30L–75L</option>
-    <option value=">75">&gt;75L</option>
-  </select>
+    <div class="step" id="step4">
+      <label>4. Loan Amount Remaining (in Lakhs)</label>
+      <input type="number" step="0.01" id="loanAmountFloat" placeholder="e.g., 98">
+      <button onclick="nextStep()">Next</button>
+    </div>
 
-  <label>5. Tenure Remaining</label>
-  <select id="tenure">
-    <option value="<10">&lt;10 years</option>
-    <option value="10-15">10–15 years</option>
-    <option value=">15">&gt;15 years</option>
-  </select>
+    <div class="step" id="step5">
+      <label>5. Tenure Remaining (in Years)</label>
+      <input type="number" step="0.01" id="tenureFloat" placeholder="e.g., 12.5">
+      <button onclick="nextStep()">Next</button>
+    </div>
 
-  <label>6. Khata Type</label>
-  <select id="khataSelect"></select>
-
-  <button onclick="calculateEMI()">Check Best Deal</button>
+    <div class="step" id="step6">
+      <label>6. Khata Type</label>
+      <select id="khataSelect"></select>
+      <button onclick="calculateEMI()">Submit</button>
+    </div>
+  </div>
 
   <div id="result" class="hidden"></div>
-
   <div id="callbackForm" class="hidden">
     <h3>Request a Call Back</h3>
     <label>Your Name</label>
@@ -87,19 +132,26 @@
 
   <script>
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRZVMhFCeAnYvW9_88jQll9skc_zRDnv-QO_FaPY0rDPpHBT20mcCR2XWzvKaos8X3RD5OH_Y83t1Z5/pub?output=csv';
-    const formSubmitUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // Replace with your actual Apps Script URL
+    const formSubmitUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+    let currentStep = 1;
 
-    let bankData = [];
+    function nextStep() {
+      document.getElementById(`step${currentStep}`).classList.remove('active');
+      currentStep++;
+      document.getElementById(`step${currentStep}`).classList.add('active');
+    }
 
     Papa.parse(sheetUrl, {
       download: true,
       header: true,
       complete: function(results) {
-        bankData = results.data.filter(row => row["Bank"]);
-        const banks = [...new Set(bankData.map(row => row["Bank"]))];
+        const bankData = results.data.filter(row => row["Bank"]);
+        window.bankData = bankData;
+        const banks = [...new Set(bankData.map(row => row["Bank"]).filter(Boolean))];
         const khatas = [...new Set(bankData.map(row => row["Khata Type"]).filter(Boolean))];
 
         const bankSelect = document.getElementById("bankSelect");
+        bankSelect.innerHTML = '';
         banks.forEach(bank => {
           const opt = document.createElement("option");
           opt.value = opt.text = bank;
@@ -107,6 +159,7 @@
         });
 
         const khataSelect = document.getElementById("khataSelect");
+        khataSelect.innerHTML = '';
         khatas.forEach(khata => {
           const opt = document.createElement("option");
           opt.value = opt.text = khata;
@@ -119,23 +172,21 @@
       const selectedBank = document.getElementById("bankSelect").value;
       const creditScore = document.getElementById("creditScoreSelect").value;
       const currentROI = parseFloat(document.getElementById("roiInput").value);
-      const loanAmountBracket = document.getElementById("loanAmount").value;
-      const tenureBracket = document.getElementById("tenure").value;
+      const loanAmount = parseFloat(document.getElementById("loanAmountFloat").value) * 100000;
+      const tenureYears = parseFloat(document.getElementById("tenureFloat").value);
       const khataType = document.getElementById("khataSelect").value;
 
-      const matchingBanks = bankData.filter(row => row["Khata Type"] === khataType);
+      const matchingBanks = window.bankData.filter(row => row["Khata Type"] === khataType);
       const lowestRateBank = matchingBanks.reduce((min, row) => {
         const roi = parseFloat(row["Rate of Interest"].replace('%', ''));
         return (roi < min.roi) ? { bank: row["Bank"], roi: roi } : min;
       }, { bank: null, roi: Infinity });
 
       const resultDiv = document.getElementById("result");
-      const dummyLoanAmount = 1000000; // Assume 10L
-      const dummyTenureYears = 15; // Assume 15y
-      const months = dummyTenureYears * 12;
+      const months = tenureYears * 12;
 
-      const currentEMI = (dummyLoanAmount * currentROI/1200) / (1 - Math.pow(1 + currentROI/1200, -months));
-      const newEMI = (dummyLoanAmount * lowestRateBank.roi/1200) / (1 - Math.pow(1 + lowestRateBank.roi/1200, -months));
+      const currentEMI = (loanAmount * currentROI/1200) / (1 - Math.pow(1 + currentROI/1200, -months));
+      const newEMI = (loanAmount * lowestRateBank.roi/1200) / (1 - Math.pow(1 + lowestRateBank.roi/1200, -months));
       const savings = (currentEMI - newEMI) * months;
 
       resultDiv.innerHTML = `
@@ -147,6 +198,7 @@
       `;
       resultDiv.classList.remove('hidden');
       document.getElementById("callbackForm").classList.remove('hidden');
+      document.getElementById("formSteps").style.display = 'none';
     }
 
     function submitCallbackRequest() {
