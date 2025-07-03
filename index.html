@@ -151,9 +151,7 @@
   </div>
 </div>
 
-<div class="step" id="step6">
-  <h3>Select Your Property's Khata Type</h3>
-  <div id="khataSelect" class="options"></div>
+
   <div class="btns">
     <button onclick="backStep(6)">←</button>
     <button onclick="calculateEMI()">Show My Savings</button>
@@ -204,16 +202,7 @@ function backStep(current) {
           const bankData = results.data.filter(row => row["Bank"]);
           window.bankData = bankData;
           console.log('Loaded data:', bankData);
-          let khatas = [...new Set(bankData.map(row => (row["Property Doability"] || '').trim()).filter(Boolean))];
-          if (khatas.length === 0) khatas = fallbackKhatas;
-
-          const khataSelect = document.getElementById("khataSelect");
-          khataSelect.innerHTML = '';
-          khatas.forEach(khata => {
-            const label = document.createElement("label");
-            label.innerHTML = `<input type='radio' name='khata' value='${khata}'> ${khata}`;
-            khataSelect.appendChild(label);
-          });
+          
         }
       });
     };
