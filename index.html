@@ -3,21 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EMI Checker (Debug Mode)</title>
+  <title>EMI Checker</title>
   <style>
-    body { font-family: 'Segoe UI',sans-serif; background: linear-gradient(#f5f7fa,#c3cfe2); max-width:600px; margin:30px auto; padding:30px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1); color:#333; }
-    h1,h3 { text-align:center; color:#1a237e; margin-bottom:20px; }
-    .step { display:none; }
-    .step.active { display:block; }
-    .options label { display:block; background:#fff; border:1px solid #ccc; border-radius:6px; padding:10px; margin-bottom:10px; cursor:pointer; }
-    .options input { margin-right:10px; }
-    input, select { width:100%; padding:12px; margin-top:10px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
-    .btns { display:flex; gap:10px; margin-top:20px; }
-    .btns button { flex:1; padding:10px; font-weight:bold; background:#1a73e8; color:#fff; border:none; border-radius:6px; cursor:pointer; transition:background .3s; }
-    .btns button:hover { background:#0d47a1; }
-    #result, #callbackForm { display:none; margin-top:30px; padding:20px; border-radius:8px; }
-    #result { background:#e8f5e9; border-left:6px solid #2e7d32; }
-    #callbackForm { background:#fce4ec; border-left:6px solid #ad1457; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #f5f7fa, #c3cfe2);
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      color: #333;
+    }
+    h1, h3 {
+      text-align: center;
+      color: #1a237e;
+    }
+    .step { display: none; }
+    .step.active { display: block; }
+    .options label {
+      display: block;
+      padding: 10px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .btns {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .btns button {
+      padding: 10px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btns button:hover {
+      background-color: #0d47a1;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    #result, #callbackForm {
+      display: none;
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    #result {
+      background: #e8f5e9;
+      border-left: 6px solid #2e7d32;
+    }
+    #callbackForm {
+      background: #fce4ec;
+      border-left: 6px solid #ad1457;
+    }
   </style>
 </head>
 <body>
@@ -28,26 +78,22 @@
       <h3>Select Your Current Bank</h3>
       <div id="bankOptions" class="options"></div>
       <div class="btns">
-        <button onclick="
-          const b = document.querySelector('input[name=bank]:checked');
-          if(b) nextStep(1);
-          else alert('Please select your bank.');
-        ">Next</button>
+        <button onclick="const bankSelected = document.querySelector('input[name=\'bank\']:checked'); if (bankSelected) { nextStep(1); } else { alert('Please select your bank.'); }">Next</button>
       </div>
     </div>
 
     <div class="step" id="step2">
-      <h3>Select Your Credit Score</h3>
+      <h3>Select Your Credit Score Range</h3>
       <select id="creditScoreSelect">
-        <option>625-650</option>
-        <option>651-675</option>
-        <option>676-700</option>
-        <option>701-725</option>
-        <option>726-750</option>
-        <option>751-775</option>
-        <option>776-800</option>
-        <option>801-825</option>
-        <option>825+</option>
+        <option value="625-650">625 - 650</option>
+        <option value="651-675">651 - 675</option>
+        <option value="676-700">676 - 700</option>
+        <option value="701-725">701 - 725</option>
+        <option value="726-750">726 - 750</option>
+        <option value="751-775">751 - 775</option>
+        <option value="776-800">776 - 800</option>
+        <option value="801-825">801 - 825</option>
+        <option value="825+">825+</option>
       </select>
       <div class="btns">
         <button onclick="backStep(2)">←</button>
@@ -56,8 +102,8 @@
     </div>
 
     <div class="step" id="step3">
-      <h3>Enter Your Current Rate of Interest (%)</h3>
-      <input type="number" id="roiInput" step="0.01" placeholder="e.g. 9.25" />
+      <h3>Enter Your Current ROI (%)</h3>
+      <input type="number" id="roiInput" step="0.01" placeholder="e.g. 9.25">
       <div class="btns">
         <button onclick="backStep(3)">←</button>
         <button onclick="nextStep(3)">Next</button>
@@ -65,8 +111,8 @@
     </div>
 
     <div class="step" id="step4">
-      <h3>Loan Amount Remaining (₹ Lakhs)</h3>
-      <input type="number" id="loanAmountFloat" step="0.1" placeholder="e.g. 58.5" />
+      <h3>Enter Loan Amount Remaining (₹ Lakhs)</h3>
+      <input type="number" id="loanAmountFloat" step="0.1" placeholder="e.g. 58.5">
       <div class="btns">
         <button onclick="backStep(4)">←</button>
         <button onclick="nextStep(4)">Next</button>
@@ -74,8 +120,8 @@
     </div>
 
     <div class="step" id="step5">
-      <h3>Tenure Remaining (in Years)</h3>
-      <input type="number" id="tenureFloat" step="0.1" placeholder="e.g. 12.5" />
+      <h3>Enter Tenure Remaining (Years)</h3>
+      <input type="number" id="tenureFloat" step="0.1" placeholder="e.g. 12.5">
       <div class="btns">
         <button onclick="backStep(5)">←</button>
         <button onclick="calculateEMI()">Show My Savings</button>
@@ -84,7 +130,7 @@
   </div>
 
   <div id="result">
-    <h3>Results</h3>
+    <h3>Result</h3>
     <p id="emiOutput"></p>
     <p id="bestBankOutput"></p>
     <p id="savingsOutput"></p>
@@ -93,122 +139,107 @@
 
   <div id="callbackForm">
     <h3>Get a Call from Us</h3>
-    <input type="text" placeholder="Your Name" /><br/>
-    <input type="email" placeholder="Your Email" /><br/>
-    <input type="tel" placeholder="Your Phone Number" /><br/>
+    <input type="text" placeholder="Your Name">
+    <input type="email" placeholder="Your Email">
+    <input type="tel" placeholder="Your Phone Number">
     <button>Submit</button>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRU3seRv9EqVmNvKM-nSQmYYJOMmdI1rhON8sAbirUPHMT2KKFCFWzRv2qvTMHaS458xSucuq33soUz/pub?output=csv';
-    const bankList = ["SBI","HDFC","ICICI","Axis Bank","PNB","Bank of Baroda","Kotak Mahindra","Yes Bank","IDFC First","IndusInd Bank","Canara Bank"];
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRU3seRv9EqVmNvKM-nSQmYYJOMmdI1rhON8sAbirUPHMT2KKFCFWzRv2qvTMHaS458xSucuq33soUz/pub?output=csv";
+    const bankList = ["SBI", "HDFC", "ICICI", "Axis Bank", "PNB", "Bank of Baroda", "Kotak Mahindra", "Yes Bank", "IDFC First", "IndusInd Bank", "Canara Bank"];
 
     window.onload = () => {
-      const opts = document.getElementById('bankOptions');
-      bankList.forEach(b => {
-        const lbl = document.createElement('label');
-        lbl.innerHTML = `<input type="radio" name="bank" value="${b}"> ${b}`;
-        opts.appendChild(lbl);
+      const bankOptions = document.getElementById("bankOptions");
+      bankList.forEach(bank => {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type='radio' name='bank' value='${bank}'> ${bank}`;
+        bankOptions.appendChild(label);
       });
+
       Papa.parse(sheetUrl, {
         download: true,
         header: true,
-        complete: rs => {
-          window.bankData = rs.data.filter(r=>r.Bank && r["Credit Score"] && r.ROI);
-          console.log("DEBUG: loaded bankData", window.bankData);
+        complete: results => {
+          window.bankData = results.data.filter(row => row["ROI"] && row["Credit Score"]);
         }
       });
     };
 
-    function nextStep(n) {
-      document.getElementById('step'+n).classList.remove('active');
-      document.getElementById('step'+(n+1)).classList.add('active');
+    function nextStep(current) {
+      document.getElementById(`step${current}`).classList.remove("active");
+      document.getElementById(`step${current + 1}`).classList.add("active");
     }
-    function backStep(n) {
-      document.getElementById('step'+n).classList.remove('active');
-      document.getElementById('step'+(n-1)).classList.add('active');
+
+    function backStep(current) {
+      document.getElementById(`step${current}`).classList.remove("active");
+      document.getElementById(`step${current - 1}`).classList.add("active");
+    }
+
+    function parseRange(rangeStr) {
+      if (rangeStr.includes("+")) return [825, 850];
+      const parts = rangeStr.split('-');
+      return parts.length === 2 ? [parseInt(parts[0]), parseInt(parts[1])] : [0, 0];
     }
 
     function calculateEMI() {
-      // 1) read & validate inputs
-      const roiInput    = parseFloat(document.getElementById("roiInput").value);
-      const loanLakhs   = parseFloat(document.getElementById("loanAmountFloat").value);
-      const tenureYears = parseFloat(document.getElementById("tenureFloat").value);
-      if(!roiInput||!loanLakhs||!tenureYears){
-        alert("Please fill all fields correctly."); return;
+      const bank = document.querySelector('input[name="bank"]:checked')?.value;
+      const creditScoreRange = document.getElementById("creditScoreSelect").value;
+      const roi = parseFloat(document.getElementById("roiInput").value);
+      const loanAmount = parseFloat(document.getElementById("loanAmountFloat").value) * 100000;
+      const tenure = parseFloat(document.getElementById("tenureFloat").value) * 12;
+
+      if (!bank || !roi || !loanAmount || !tenure) {
+        alert("Please fill all fields.");
+        return;
       }
-      const loan   = loanLakhs * 100000;
-      const months = tenureYears * 12;
-      const mRate  = roiInput / 1200;
 
-      // 2) compute current EMI
-      const emi = (loan * mRate * Math.pow(1+mRate, months)) /
-                  (Math.pow(1+mRate, months) - 1);
-      document.getElementById("emiOutput").innerText = `Your current EMI: ₹${emi.toFixed(2)}`;
+      const monthlyRate = roi / 1200;
+      const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) / (Math.pow(1 + monthlyRate, tenure) - 1);
 
-      // 3) mid‐point of credit score
-      const csRange = document.getElementById("creditScoreSelect").value;
-      const parts   = csRange.split("-");
-      const csMid   = parts.length===2
-        ? (parseInt(parts[0],10)+parseInt(parts[1],10))/2
-        : parseInt(parts[0],10);
+      const [userLow, userHigh] = parseRange(creditScoreRange);
+      const userMid = (userLow + userHigh) / 2;
 
-      console.log("DEBUG: roiInput=",roiInput,"loan=",loan,"months=",months,"csMid=",csMid);
-      console.log("DEBUG: raw bankData:",window.bankData);
-
-      // 4) parse ranges and ROI
-      const banks = (window.bankData||[]).map(r=>{
-        const rng = (r["Credit Score"]||"").trim();
-        let [min,max] = rng.includes("-")
-          ? rng.split("-").map(s=>parseInt(s,10))
-          : [parseInt(rng,10),Infinity];
-        const rawR = (r.ROI||"").trim().replace("%","");
-        return { bank:r.Bank, minCs:min, maxCs:max, roi:parseFloat(rawR) };
+      const possibleOffers = window.bankData.filter(row => {
+        const [rangeLow, rangeHigh] = parseRange(row["Credit Score"]);
+        const scoreMatch = userMid >= rangeLow && userMid <= rangeHigh;
+        const bankMatch = row["BANK NAME 1"] && row["ROI"] && scoreMatch;
+        return bankMatch;
       });
-      console.log("DEBUG: parsed banks:",banks);
 
-      // 5) filter by credit‐score
-      let eligible = banks.filter(b=>csMid>=b.minCs && csMid<=b.maxCs);
-      console.log("DEBUG: eligible:",eligible);
+      let bestOffer = null;
+      let minEMI = emi;
 
-      // 6) fallback if none
-      if(!eligible.length){
-        const nextMins = Array.from(new Set(banks.filter(b=>b.minCs>csMid).map(b=>b.minCs))).sort((a,b)=>a-b);
-        console.log("DEBUG: nextMins:",nextMins);
-        if(nextMins.length) eligible = banks.filter(b=>b.minCs===nextMins[0]);
-        else {
-          const top = Math.max(...banks.map(b=>b.maxCs));
-          eligible = banks.filter(b=>b.maxCs===top);
+      possibleOffers.forEach(row => {
+        const offerRoi = parseFloat(row["ROI"]);
+        const offerRate = offerRoi / 1200;
+        const offerEmi = (loanAmount * offerRate * Math.pow(1 + offerRate, tenure)) / (Math.pow(1 + offerRate, tenure) - 1);
+        if (offerEmi < minEMI) {
+          minEMI = offerEmi;
+          bestOffer = {
+            bank: row["BANK NAME 1"],
+            roi: offerRoi,
+            emi: offerEmi
+          };
         }
-        console.log("DEBUG: fallback eligible:",eligible);
-      }
+      });
 
-      // 7) filter & sort by ROI < user’s ROI
-      const better = eligible.filter(b=>!isNaN(b.roi)&&b.roi<roiInput)
-                             .sort((a,b)=>a.roi-b.roi);
-      console.log("DEBUG: better:",better);
+      document.getElementById("emiOutput").innerText = `Your Current EMI: ₹${emi.toFixed(2)}`;
 
-      // 8) display best
-      if(better.length){
-        const best = better[0],
-              bRate = best.roi/1200,
-              bEmi  = (loan*bRate*Math.pow(1+bRate,months))/
-                      (Math.pow(1+bRate,months)-1),
-              totalSavings = emi*months - bEmi*months,
-              monthlyRed    = emi - bEmi;
-        document.getElementById("bestBankOutput").innerText = `Best offer: ${best.bank} @ ${best.roi}%`;
-        document.getElementById("savingsOutput").innerText   = `Total Savings: ₹${totalSavings.toFixed(2)}`;
-        document.getElementById("reductionOutput").innerText= `Monthly Reduction: ₹${monthlyRed.toFixed(2)}`;
+      if (bestOffer) {
+        const savings = (emi - bestOffer.emi) * tenure;
+        document.getElementById("bestBankOutput").innerText = `Best Offer: ${bestOffer.bank} @ ${bestOffer.roi}%`;
+        document.getElementById("savingsOutput").innerText = `Total Savings: ₹${savings.toFixed(2)}`;
+        document.getElementById("reductionOutput").innerText = `EMI Reduction: ₹${(emi - bestOffer.emi).toFixed(2)}`;
       } else {
-        document.getElementById("bestBankOutput").innerText = `No qualifying better offers found.`;
-        document.getElementById("savingsOutput").innerText   = "";
-        document.getElementById("reductionOutput").innerText= "";
+        document.getElementById("bestBankOutput").innerText = "No better offer available.";
+        document.getElementById("savingsOutput").innerText = "";
+        document.getElementById("reductionOutput").innerText = "";
       }
 
-      // 9) reveal
-      document.getElementById("formSteps").style.display    = "none";
-      document.getElementById("result").style.display       = "block";
+      document.getElementById("formSteps").style.display = "none";
+      document.getElementById("result").style.display = "block";
       document.getElementById("callbackForm").style.display = "block";
     }
   </script>
