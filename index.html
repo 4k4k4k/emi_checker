@@ -84,8 +84,73 @@
 <body>
   <h1>Still Paying High EMI?</h1>
 
-  <!-- FORM FLOW OMITTED FOR BREVITY -->
+  <div id="formSteps">
+    <div class="step active" id="step1">
+      <h3>Select Your Current Bank</h3>
+      <div id="bankOptions" class="options"></div>
+      <button onclick="nextStep(1)">Next</button>
+    </div>
 
+    <div class="step" id="step2">
+      <h3>Select Your Credit Score</h3>
+      <select id="creditScoreSelect">
+        <option value="625-650">625 - 650</option>
+        <option value="651-675">651 - 675</option>
+        <option value="676-700">676 - 700</option>
+        <option value="701-725">701 - 725</option>
+        <option value="726-750">726 - 750</option>
+        <option value="751-775">751 - 775</option>
+        <option value="776-800">776 - 800</option>
+        <option value="801-825">801 - 825</option>
+        <option value="825+">825+</option>
+      </select>
+      <button onclick="nextStep(2)">Next</button>
+    </div>
+
+    <div class="step" id="step3">
+      <h3>Enter Your Current Rate of Interest (%)</h3>
+      <input type="number" id="roiInput" step="0.01" placeholder="e.g. 9.25">
+      <button onclick="nextStep(3)">Next</button>
+    </div>
+
+    <div class="step" id="step4">
+      <h3>Select Your Loan Amount Remaining</h3>
+      <select id="loanAmountFloat">
+        <option value="30">Less than ₹30L</option>
+        <option value="50">₹30L - ₹75L</option>
+        <option value="90">More than ₹75L</option>
+      </select>
+      <button onclick="nextStep(4)">Next</button>
+    </div>
+
+    <div class="step" id="step5">
+      <h3>Select Tenure Remaining (in Years)</h3>
+      <select id="tenureFloat">
+        <option value="9">Less than 10 years</option>
+        <option value="12">10 - 15 years</option>
+        <option value="20">More than 15 years</option>
+      </select>
+      <button onclick="nextStep(5)">Next</button>
+    </div>
+
+    <div class="step" id="step6">
+      <h3>Select Your Property's Khata Type</h3>
+      <div id="khataSelect" class="options"></div>
+      <button onclick="calculateEMI()">Show My Savings</button>
+    </div>
+  </div>
+
+  <div id="result"></div>
+
+  <div id="callbackForm">
+    <h3>Get a Call from Us</h3>
+    <input type="text" placeholder="Your Name">
+    <input type="email" placeholder="Your Email">
+    <input type="tel" placeholder="Your Phone Number">
+    <button>Submit</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
     const bankList = ["SBI", "HDFC", "ICICI", "Axis Bank", "PNB", "Bank of Baroda", "Kotak Mahindra", "Yes Bank", "IDFC First", "IndusInd Bank", "Canara Bank"];
     const fallbackKhatas = ["A Khata", "B Khata", "E Khata (11/A)", "DC Converted", "Gram Panchayat", "Non-DC"];
@@ -120,6 +185,11 @@
         }
       });
     };
+
+    function nextStep(current) {
+      document.getElementById(`step${current}`).classList.remove("active");
+      document.getElementById(`step${current + 1}`).classList.add("active");
+    }
 
     function calculateEMI() {
       const selectedBank = document.querySelector("input[name='bank']:checked")?.value;
