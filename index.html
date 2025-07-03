@@ -101,7 +101,7 @@
       <div id="bankOptions" class="options"></div>
       <div class="btns">
         
-        <button onclick="nextStep(1)">Next</button>
+        <button onclick="if (document.querySelector('input[name=\'bank\']:checked')) { nextStep(1); } else { alert('Please select your bank.'); }">Next</button>
       </div>
     </div>
 
