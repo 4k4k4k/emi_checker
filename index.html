@@ -908,6 +908,34 @@
     function hideError() {
       document.getElementById('errorMsg').style.display = 'none';
     }
+    function submitToGoogleSheet() {
+  const payload = {
+    creditScore: selectedCreditScore,
+    loanAmount: parseFloat(document.getElementById('loanAmount').value),
+    currentROI: parseFloat(document.getElementById('currentROI').value),
+    tenure: parseFloat(document.getElementById('tenure').value),
+    khattaType: selectedKhatta,
+    bankCategory: selectedCategory,
+    recommendedBank: document.getElementById('bestBank').textContent,
+    bestROI: document.getElementById('bestROI').textContent.replace('%', ''),
+    bestEMI: document.getElementById('bestEMI').textContent.replace(/[₹,()]/g, '').trim(),
+    currentEMI: document.getElementById('currentEMI').textContent.replace(/[₹,]/g, '').trim(),
+    totalSavings: document.getElementById('totalSavings').textContent.replace(/[₹,]/g, '').trim(),
+    monthlySavings: document.getElementById('monthlySavings').textContent.replace(/[₹,]/g, '').trim()
+  };
+
+  fetch('https://script.google.com/macros/s/AKfycbw0f7MUKYzYMfO0GqQmTSHWkixcL3UtmnK_3_0Fr0RgGitqYK2_PMnDSkQTePItcg4x/exec', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(response => console.log('Success:', response))
+  .catch(error => console.error('Error submitting to Google Sheet:', error));
+}
+
   </script>
 </body>
 </html>
