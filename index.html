@@ -3,220 +3,883 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EMI Checker</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <title>EMI Savings Calculator - Reduce Your Home Loan EMI</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f5f7fa;
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    h1, h2, h3 {
-      text-align: center;
-      color: #1a237e;
-    }
-    .step { display: none; }
-    .step.active { display: block; }
-    .options label {
-      display: block;
-      padding: 10px;
-      background: #fff;
-      margin: 10px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      cursor: pointer;
-    }
-    input[type="radio"], input[type="number"], select {
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      max-width: 500px;
       width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transform: translateY(0);
+      transition: all 0.3s ease;
     }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 30px;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .step h3 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .credit-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .credit-option {
+      padding: 15px;
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .credit-option:hover {
+      background: #e8eaf6;
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+
+    .credit-option.selected {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .input-group {
+      margin-bottom: 25px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .khatta-options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .khatta-option {
+      padding: 15px;
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .khatta-option:hover {
+      background: #e8eaf6;
+      border-color: #667eea;
+    }
+
+    .khatta-option.selected {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .bank-category {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .category-option {
+      flex: 1;
+      padding: 20px;
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .category-option:hover {
+      background: #e8eaf6;
+      border-color: #667eea;
+    }
+
+    .category-option.selected {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .category-option h4 {
+      margin-bottom: 5px;
+    }
+
+    .category-option p {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
     .btns {
       display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-    }
-    .btns button {
-      flex: 1;
-      padding: 12px;
-      margin: 0 5px;
-      background-color: #1a73e8;
-      color: white;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-    }
-    #result {
+      gap: 10px;
       margin-top: 30px;
-      background: #e8f5e9;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 15px 25px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .result-section {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .preliminary-result {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .preliminary-result h4 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .savings-amount {
+      font-size: 32px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .savings-desc {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .know-more {
+      background: white;
       padding: 20px;
-      border-left: 6px solid green;
-      border-radius: 8px;
+      border-radius: 15px;
+      text-align: center;
+      border: 2px dashed #667eea;
+    }
+
+    .know-more h5 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .final-result {
+      background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .result-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-card h5 {
+      color: #333;
+      margin-bottom: 5px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .result-card .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #667eea;
+    }
+
+    .result-card.highlight {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .result-card.highlight h5 {
+      color: white;
+      opacity: 0.9;
+    }
+
+    .result-card.highlight .value {
+      color: white;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .loader {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .loader-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-msg {
+      background: #fee;
+      color: #c33;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .credit-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .bank-category {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Still Paying High EMI?</h1>
-
-  <div id="form">
-    <div class="step active" id="step1">
-      <h3>Select Your Current Bank</h3>
-      <div id="bankOptions" class="options"></div>
-      <div class="btns">
-        <button onclick="nextStep(1)">Next</button>
-      </div>
+  <div class="container">
+    <div class="header">
+      <h1>🏠 Reduce Your Home Loan EMI</h1>
+      <p>Find the best rates based on your credit score</p>
     </div>
 
-    <div class="step" id="step2">
-      <h3>Select Your Credit Score Range</h3>
-      <select id="creditScore">
-        <option value="625-650">625-650</option>
-        <option value="651-675">651-675</option>
-        <option value="676-700">676-700</option>
-        <option value="701-725">701-725</option>
-        <option value="726-750">726-750</option>
-        <option value="751-775">751-775</option>
-        <option value="776-800">776-800</option>
-        <option value="801-825">801-825</option>
-        <option value="825+">825+</option>
-      </select>
-      <div class="btns">
-        <button onclick="backStep(2)">←</button>
-        <button onclick="nextStep(2)">Next</button>
+    <div class="content">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar" style="width: 0%"></div>
       </div>
-    </div>
 
-    <div class="step" id="step3">
-      <h3>Current ROI (%)</h3>
-      <input type="number" id="roiInput" step="0.01" placeholder="e.g. 9.25" />
-      <div class="btns">
-        <button onclick="backStep(3)">←</button>
-        <button onclick="nextStep(3)">Next</button>
+      <!-- Step 1: Credit Score -->
+      <div class="step active" id="step1">
+        <h3>What's your credit score range?</h3>
+        <div class="credit-options" id="creditOptions">
+          <div class="credit-option" data-value="625-650">625-650</div>
+          <div class="credit-option" data-value="651-675">651-675</div>
+          <div class="credit-option" data-value="676-700">676-700</div>
+          <div class="credit-option" data-value="701-725">701-725</div>
+          <div class="credit-option" data-value="726-750">726-750</div>
+          <div class="credit-option" data-value="751-775">751-775</div>
+          <div class="credit-option" data-value="776-800">776-800</div>
+          <div class="credit-option" data-value="801-825">801-825</div>
+          <div class="credit-option" data-value="825+">825+</div>
+        </div>
+        <div class="btns">
+          <button class="btn btn-primary" onclick="nextStep(1)">Continue</button>
+        </div>
       </div>
-    </div>
 
-    <div class="step" id="step4">
-      <h3>Loan Amount Remaining (in ₹ Lakhs)</h3>
-      <input type="number" id="loanAmount" step="0.1" placeholder="e.g. 60.5" />
-      <div class="btns">
-        <button onclick="backStep(4)">←</button>
-        <button onclick="nextStep(4)">Next</button>
+      <!-- Step 2: Loan Amount -->
+      <div class="step" id="step2">
+        <h3>Remaining loan amount</h3>
+        <div class="input-group">
+          <label>Enter amount in Lakhs (₹)</label>
+          <input type="number" id="loanAmount" step="0.1" placeholder="e.g., 45.5" />
+        </div>
+        <div class="btns">
+          <button class="btn btn-secondary" onclick="backStep(2)">Back</button>
+          <button class="btn btn-primary" onclick="showPreliminaryResult()">Check Savings</button>
+        </div>
       </div>
-    </div>
 
-    <div class="step" id="step5">
-      <h3>Tenure Remaining (in Years)</h3>
-      <input type="number" id="tenureYears" step="0.1" placeholder="e.g. 12.5" />
-      <div class="btns">
-        <button onclick="backStep(5)">←</button>
-        <button onclick="calculateEMI()">Show My Savings</button>
+      <!-- Preliminary Result -->
+      <div class="result-section" id="preliminaryResult">
+        <div class="preliminary-result">
+          <h4>Based on your credit score</h4>
+          <div class="savings-amount" id="potentialSavings">₹0</div>
+          <div class="savings-desc">Potential monthly savings</div>
+        </div>
+        <div class="know-more">
+          <h5>Want to know the exact bank, ROI, and EMI?</h5>
+          <p>Answer a few more questions for personalized results</p>
+          <button class="btn btn-primary" onclick="startDetailedQuestions()">Get Exact Details</button>
+        </div>
+        <div class="btns">
+          <button class="btn btn-secondary" onclick="startOver()">Start Over</button>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <div id="result" style="display:none;">
-    <h3>Result</h3>
-    <p id="currentEmi"></p>
-    <p id="bestEmi"></p>
-    <p id="savings"></p>
+      <!-- Step 3: Current ROI -->
+      <div class="step" id="step3">
+        <h3>Your current ROI</h3>
+        <div class="input-group">
+          <label>Enter your current interest rate (%)</label>
+          <input type="number" id="currentROI" step="0.01" placeholder="e.g., 8.5" />
+        </div>
+        <div class="btns">
+          <button class="btn btn-secondary" onclick="backToPreliminary()">Back</button>
+          <button class="btn btn-primary" onclick="nextStep(3)">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Tenure -->
+      <div class="step" id="step4">
+        <h3>Remaining tenure</h3>
+        <div class="input-group">
+          <label>Enter remaining years</label>
+          <input type="number" id="tenure" step="0.1" placeholder="e.g., 15" />
+        </div>
+        <div class="btns">
+          <button class="btn btn-secondary" onclick="backStep(4)">Back</button>
+          <button class="btn btn-primary" onclick="nextStep(4)">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Khatta Type -->
+      <div class="step" id="step5">
+        <h3>Select your Khatta type</h3>
+        <div class="khatta-options" id="khattaOptions">
+          <div class="khatta-option" data-value="A">A KHATTA</div>
+          <div class="khatta-option" data-value="B">E KHATTA(11/A)</div>
+          <div class="khatta-option" data-value="C">B KHATTA</div>
+          <div class="khatta-option" data-value="D">DC</div>
+          <div class="khatta-option" data-value="E">GP PROPERTY</div>
+        </div>
+        <div class="btns">
+          <button class="btn btn-secondary" onclick="backStep(5)">Back</button>
+          <button class="btn btn-primary" onclick="nextStep(5)">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 6: Bank Category -->
+      <div class="step" id="step6">
+        <h3>Preferred bank category</h3>
+        <div class="bank-category" id="bankCategory">
+          <div class="category-option" data-value="G">
+            <h4>Nationalised</h4>
+            <p>Government banks only</p>
+          </div>
+          <div class="category-option" data-value="F">
+            <h4>Neutral</h4>
+            <p>All banks & NBFCs</p>
+          </div>
+        </div>
+        <div class="btns">
+          <button class="btn btn-secondary" onclick="backStep(6)">Back</button>
+          <button class="btn btn-primary" onclick="calculateFinalResult()">Show Results</button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div class="loader" id="loader">
+        <div class="loader-spinner"></div>
+        <p>Calculating your best options...</p>
+      </div>
+
+      <!-- Final Result -->
+      <div class="result-section" id="finalResult">
+        <div class="final-result">
+          <div class="result-card">
+            <h5>Your Current EMI</h5>
+            <div class="value" id="currentEMI">₹0</div>
+          </div>
+          <div class="result-card highlight">
+            <h5>Best Available EMI</h5>
+            <div class="value" id="bestEMI">₹0</div>
+          </div>
+          <div class="result-card">
+            <h5>Recommended Bank</h5>
+            <div class="value" id="bestBank">-</div>
+          </div>
+          <div class="result-card">
+            <h5>Best ROI Available</h5>
+            <div class="value" id="bestROI">0%</div>
+          </div>
+          <div class="result-card highlight">
+            <h5>Total Savings</h5>
+            <div class="value" id="totalSavings">₹0</div>
+          </div>
+        </div>
+        <div class="btns">
+          <button class="btn btn-primary" onclick="startOver()">Calculate Again</button>
+        </div>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
   </div>
 
   <script>
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRU3seRv9EqVmNvKM-nSQmYYJOMmdI1rhON8sAbirUPHMT2KKFCFWzRv2qvTMHaS458xSucuq33soUz/pub?output=csv";
+    // Embedded bank data from your Excel file
+    const bankData = [
+      {"BANK":"SBI","SCORE MIN":825,"SCORE MAX":900,"ROI":7.5,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"SBI","SCORE MIN":750,"SCORE MAX":824,"ROI":7.7,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"SBI","SCORE MIN":700,"SCORE MAX":749,"ROI":7.8,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"SBI","SCORE MIN":650,"SCORE MAX":699,"ROI":7.9,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"SBI","SCORE MIN":625,"SCORE MAX":649,"ROI":8.5,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":825,"SCORE MAX":900,"ROI":7.5,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":750,"SCORE MAX":824,"ROI":7.7,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":700,"SCORE MAX":749,"ROI":7.8,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":650,"SCORE MAX":699,"ROI":7.9,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":625,"SCORE MAX":649,"ROI":8.5,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":825,"SCORE MAX":900,"ROI":8,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":750,"SCORE MAX":824,"ROI":8.1,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":700,"SCORE MAX":749,"ROI":8.3,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":650,"SCORE MAX":699,"ROI":8.5,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":625,"SCORE MAX":649,"ROI":8.5,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":800,"SCORE MAX":900,"ROI":8.2,"PROCCESSING FEE":12500,"% MODT":0.6,"E":"GP PROPERTY","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":750,"SCORE MAX":799,"ROI":8.3,"PROCCESSING FEE":12500,"% MODT":0.6,"E":"GP PROPERTY","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":700,"SCORE MAX":749,"ROI":8.5,"PROCCESSING FEE":12500,"% MODT":0.6,"E":"GP PROPERTY","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":650,"SCORE MAX":699,"ROI":8.7,"PROCCESSING FEE":12500,"% MODT":0.6,"E":"GP PROPERTY","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"AXIS","SCORE MIN":825,"SCORE MAX":900,"ROI":7.85,"PROCCESSING FEE":23600,"% MODT":0.45,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"AXIS","SCORE MIN":750,"SCORE MAX":824,"ROI":8,"PROCCESSING FEE":23600,"% MODT":0.45,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"AXIS","SCORE MIN":700,"SCORE MAX":749,"ROI":8.25,"PROCCESSING FEE":23600,"% MODT":0.45,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"AXIS","SCORE MIN":650,"SCORE MAX":699,"ROI":8.75,"PROCCESSING FEE":23600,"% MODT":0.45,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":800,"SCORE MAX":900,"ROI":8,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":750,"SCORE MAX":799,"ROI":8.1,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":730,"SCORE MAX":749,"ROI":8.25,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":700,"SCORE MAX":729,"ROI":8.35,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":0,"SCORE MAX":699,"ROI":9.05,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":-1,"ROI":8.15,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"KOTAK","SCORE MIN":800,"SCORE MAX":900,"ROI":8.3,"PROCCESSING FEE":14160,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"KOTAK","SCORE MIN":750,"SCORE MAX":799,"ROI":8.35,"PROCCESSING FEE":14160,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"KOTAK","SCORE MIN":700,"SCORE MAX":749,"ROI":8.4,"PROCCESSING FEE":14160,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"KOTAK","SCORE MIN":650,"SCORE MAX":699,"ROI":8.75,"PROCCESSING FEE":14160,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"CANARA","SCORE MIN":720,"SCORE MAX":900,"ROI":7.8,"PROCCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"CANARA","SCORE MIN":700,"SCORE MAX":719,"ROI":8.1,"PROCCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"CANARA","SCORE MIN":650,"SCORE MAX":699,"ROI":8.35,"PROCCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"CANARA","SCORE MIN":625,"SCORE MAX":649,"ROI":8.8,"PROCCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"PNB","SCORE MIN":750,"SCORE MAX":900,"ROI":7.95,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"PNB","SCORE MIN":700,"SCORE MAX":749,"ROI":8.1,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"PNB","SCORE MIN":650,"SCORE MAX":699,"ROI":8.35,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"PNB","SCORE MIN":625,"SCORE MAX":649,"ROI":8.7,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":800,"SCORE MAX":900,"ROI":8.3,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":750,"SCORE MAX":799,"ROI":8.4,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":700,"SCORE MAX":749,"ROI":8.5,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":650,"SCORE MAX":699,"ROI":8.6,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":625,"SCORE MAX":649,"ROI":8.85,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"HDFC","SCORE MIN":750,"SCORE MAX":900,"ROI":8.25,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"HDFC","SCORE MIN":725,"SCORE MAX":749,"ROI":8.45,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"HDFC","SCORE MIN":700,"SCORE MAX":724,"ROI":8.65,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"HDFC","SCORE MIN":675,"SCORE MAX":699,"ROI":9,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"HDFC","SCORE MIN":650,"SCORE MAX":674,"ROI":9.5,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"HDFC","SCORE MIN":625,"SCORE MAX":649,"ROI":10,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":825,"SCORE MAX":900,"ROI":8.3,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":750,"SCORE MAX":824,"ROI":8.35,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":700,"SCORE MAX":749,"ROI":8.5,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":650,"SCORE MAX":699,"ROI":8.65,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":625,"SCORE MAX":649,"ROI":9,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"PNB HOUSING","SCORE MIN":750,"SCORE MAX":900,"ROI":8.35,"PROCCESSING FEE":11800,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"PNB HOUSING","SCORE MIN":700,"SCORE MAX":749,"ROI":8.45,"PROCCESSING FEE":11800,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"PNB HOUSING","SCORE MIN":650,"SCORE MAX":699,"ROI":8.65,"PROCCESSING FEE":11800,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"PNB HOUSING","SCORE MIN":625,"SCORE MAX":649,"ROI":8.9,"PROCCESSING FEE":11800,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI HOME FINANCE","SCORE MIN":650,"SCORE MAX":900,"ROI":9.25,"PROCCESSING FEE":17700,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI HOME FINANCE","SCORE MIN":625,"SCORE MAX":649,"ROI":9.75,"PROCCESSING FEE":17700,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"LIC HFL","SCORE MIN":700,"SCORE MAX":900,"ROI":8.75,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"LIC HFL","SCORE MIN":650,"SCORE MAX":699,"ROI":9,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"LIC HFL","SCORE MIN":625,"SCORE MAX":649,"ROI":9.5,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"SHUBHAM HOUSING","SCORE MIN":625,"SCORE MAX":900,"ROI":10.75,"PROCCESSING FEE":0,"% MODT":2,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"SHUBHAM HOUSING","SCORE MIN":0,"SCORE MAX":624,"ROI":11.5,"PROCCESSING FEE":0,"% MODT":2,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"}
+    ];
+    
+    let selectedCreditScore = null;
+    let selectedKhatta = null;
+    let selectedCategory = null;
 
-    let bankData = [];
+    // Setup event listeners on load
+    window.onload = function() {
+      setupEventListeners();
+      console.log('Bank data loaded:', bankData.length, 'records');
+    };
+
+    function setupEventListeners() {
+      // Credit score selection
+      document.querySelectorAll('.credit-option').forEach(option => {
+        option.addEventListener('click', function() {
+          document.querySelectorAll('.credit-option').forEach(o => o.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedCreditScore = this.dataset.value;
+        });
+      });
+
+      // Khatta type selection
+      document.querySelectorAll('.khatta-option').forEach(option => {
+        option.addEventListener('click', function() {
+          document.querySelectorAll('.khatta-option').forEach(o => o.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedKhatta = this.dataset.value;
+        });
+      });
+
+      // Bank category selection
+      document.querySelectorAll('.category-option').forEach(option => {
+        option.addEventListener('click', function() {
+          document.querySelectorAll('.category-option').forEach(o => o.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedCategory = this.dataset.value;
+        });
+      });
+    }
+
+    function updateProgress(step) {
+      const totalSteps = 6;
+      const progress = (step / totalSteps) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+    }
 
     function nextStep(current) {
-      const inputs = document.querySelectorAll(`#step${current} input, #step${current} select`);
-      for (let input of inputs) {
-        if ((input.type === "radio" && !document.querySelector(`input[name='${input.name}']:checked`)) || (input.type !== "radio" && !input.value)) {
-          alert("Please complete the field.");
+      if (current === 1 && !selectedCreditScore) {
+        showError('Please select your credit score range');
+        return;
+      }
+      if (current === 2) {
+        const loanAmount = document.getElementById('loanAmount').value;
+        if (!loanAmount || loanAmount <= 0) {
+          showError('Please enter a valid loan amount');
           return;
         }
       }
-      document.getElementById(`step${current}`).classList.remove("active");
-      document.getElementById(`step${current + 1}`).classList.add("active");
+      if (current === 3) {
+        const roi = document.getElementById('currentROI').value;
+        if (!roi || roi <= 0) {
+          showError('Please enter your current ROI');
+          return;
+        }
+      }
+      if (current === 4) {
+        const tenure = document.getElementById('tenure').value;
+        if (!tenure || tenure <= 0) {
+          showError('Please enter remaining tenure');
+          return;
+        }
+      }
+      if (current === 5 && !selectedKhatta) {
+        showError('Please select your Khatta type');
+        return;
+      }
+      if (current === 6 && !selectedCategory) {
+        showError('Please select bank category');
+        return;
+      }
+
+      hideError();
+      document.getElementById(`step${current}`).classList.remove('active');
+      document.getElementById(`step${current + 1}`).classList.add('active');
+      updateProgress(current + 1);
     }
 
     function backStep(current) {
-      document.getElementById(`step${current}`).classList.remove("active");
-      document.getElementById(`step${current - 1}`).classList.add("active");
+      document.getElementById(`step${current}`).classList.remove('active');
+      document.getElementById(`step${current - 1}`).classList.add('active');
+      updateProgress(current - 1);
     }
 
-    function calculateEMI() {
-      const bank = document.querySelector("input[name='bank']:checked")?.value;
-      const creditScoreRange = document.getElementById("creditScore").value;
-      const creditMid = getCreditMid(creditScoreRange);
-      const roi = parseFloat(document.getElementById("roiInput").value);
-      const loanAmount = parseFloat(document.getElementById("loanAmount").value) * 100000;
-      const tenure = parseFloat(document.getElementById("tenureYears").value) * 12;
-      const monthlyRate = roi / 1200;
+    function backToPreliminary() {
+      document.getElementById('step3').classList.remove('active');
+      document.getElementById('preliminaryResult').style.display = 'block';
+    }
 
-      const currentEMI = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) / 
-                         (Math.pow(1 + monthlyRate, tenure) - 1);
+    function getCreditMidpoint(range) {
+      if (range === '825+') return 830;
+      const [min, max] = range.split('-').map(Number);
+      return (min + max) / 2;
+    }
 
-      document.getElementById("currentEmi").innerText = `Your current EMI: ₹${currentEMI.toFixed(2)}`;
+    function calculateEMI(principal, rate, months) {
+      const monthlyRate = rate / 100 / 12;
+      return (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+             (Math.pow(1 + monthlyRate, months) - 1);
+    }
 
-      const eligible = bankData.filter(row => {
-        return row["BANK NAME 1"] === bank && creditMidInRange(creditMid, row["Credit Score"]);
-      });
-
-      const better = eligible.find(row => parseFloat(row["ROI"]) < roi);
-
-      if (better) {
-        const bestRate = parseFloat(better["ROI"]);
-        const newMonthly = bestRate / 1200;
-        const newEMI = (loanAmount * newMonthly * Math.pow(1 + newMonthly, tenure)) /
-                       (Math.pow(1 + newMonthly, tenure) - 1);
-        const savings = (currentEMI - newEMI) * tenure;
-        document.getElementById("bestEmi").innerText = `Best EMI available: ₹${newEMI.toFixed(2)} @ ${bestRate}%`;
-        document.getElementById("savings").innerText = `Total savings: ₹${savings.toFixed(2)}`;
-      } else {
-        document.getElementById("bestEmi").innerText = `No better offer found for your credit score.`;
-        document.getElementById("savings").innerText = ``;
+    function showPreliminaryResult() {
+      const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+      if (!loanAmount || loanAmount <= 0) {
+        showError('Please enter a valid loan amount');
+        return;
       }
 
-      document.getElementById("form").style.display = "none";
-      document.getElementById("result").style.display = "block";
-    }
-
-    function getCreditMid(range) {
-      if (range === "825+") return 830;
-      const [low, high] = range.split('-').map(Number);
-      return (low + high) / 2;
-    }
-
-    function creditMidInRange(mid, rangeText) {
-      if (!rangeText) return false;
-      if (rangeText.includes("+")) return mid >= parseInt(rangeText);
-      const [low, high] = rangeText.split('-').map(Number);
-      return mid >= low && mid <= high;
-    }
-
-    window.onload = function () {
-      Papa.parse(sheetURL, {
-        download: true,
-        header: true,
-        complete: function (results) {
-          bankData = results.data.filter(row => row["BANK NAME 1"] && row["Credit Score"] && row["ROI"]);
-          const bankSet = [...new Set(bankData.map(row => row["BANK NAME 1"]))];
-          const bankOptions = document.getElementById("bankOptions");
-
-          bankSet.forEach(bank => {
-            const label = document.createElement("label");
-            label.innerHTML = `<input type='radio' name='bank' value='${bank}'> ${bank}`;
-            bankOptions.appendChild(label);
-          });
-        }
+      hideError();
+      const creditScore = getCreditMidpoint(selectedCreditScore);
+      const loanAmountInRs = loanAmount * 100000;
+      
+      // Find best ROI for this credit score across all banks
+      const eligibleBanks = bankData.filter(row => {
+        const minScore = parseFloat(row['SCORE MIN']);
+        const maxScore = parseFloat(row['SCORE MAX']);
+        return creditScore >= minScore && creditScore <= maxScore;
       });
-    };
+
+      if (eligibleBanks.length === 0) {
+        showError('No banks found for your credit score');
+        return;
+      }
+
+      // Find the lowest ROI
+      const bestROI = Math.min(...eligibleBanks.map(row => parseFloat(row.ROI)));
+      
+      // Assume average current ROI is 9% and tenure 15 years for preliminary calculation
+      const assumedCurrentROI = 9;
+      const assumedTenure = 15 * 12;
+      
+      const currentEMI = calculateEMI(loanAmountInRs, assumedCurrentROI, assumedTenure);
+      const bestEMI = calculateEMI(loanAmountInRs, bestROI, assumedTenure);
+      const monthlySavings = currentEMI - bestEMI;
+
+      document.getElementById('potentialSavings').textContent = 
+        `₹${monthlySavings.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+      
+      document.getElementById('step2').classList.remove('active');
+      document.getElementById('preliminaryResult').style.display = 'block';
+    }
+
+    function startDetailedQuestions() {
+      document.getElementById('preliminaryResult').style.display = 'none';
+      document.getElementById('step3').classList.add('active');
+      updateProgress(3);
+    }
+
+    function calculateFinalResult() {
+      if (!selectedCategory) {
+        showError('Please select bank category');
+        return;
+      }
+
+      hideError();
+      document.getElementById('step6').classList.remove('active');
+      document.getElementById('loader').style.display = 'block';
+
+      setTimeout(() => {
+        const loanAmount = parseFloat(document.getElementById('loanAmount').value) * 100000;
+        const currentROI = parseFloat(document.getElementById('currentROI').value);
+        const tenure = parseFloat(document.getElementById('tenure').value) * 12;
+        const creditScore = getCreditMidpoint(selectedCreditScore);
+
+        // Calculate current EMI
+        const currentEMI = calculateEMI(loanAmount, currentROI, tenure);
+
+        // Find eligible banks based on all criteria
+        const eligibleBanks = bankData.filter(row => {
+          const minScore = parseFloat(row['SCORE MIN']);
+          const maxScore = parseFloat(row['SCORE MAX']);
+          
+          // Check credit score
+          if (creditScore < minScore || creditScore > maxScore) return false;
+          
+          // Check khatta type - column A maps to A KHATTA, B to E KHATTA(11/A), etc.
+          if (!row[selectedKhatta] || row[selectedKhatta] === '') return false;
+          
+          // Check bank category - F for NEUTRAL, G for NATIONALISED
+          if (!row[selectedCategory] || row[selectedCategory] === '') return false;
+          
+          return true;
+        });
+
+        if (eligibleBanks.length === 0) {
+          showError('No banks found matching your criteria. Try selecting "Neutral" for more options.');
+          document.getElementById('loader').style.display = 'none';
+          document.getElementById('step6').classList.add('active');
+          return;
+        }
+
+        // Find the bank with lowest EMI
+        let bestBank = null;
+        let lowestEMI = Infinity;
+        
+        eligibleBanks.forEach(bank => {
+          const roi = parseFloat(bank.ROI);
+          const emi = calculateEMI(loanAmount, roi, tenure);
+          if (emi < lowestEMI) {
+            lowestEMI = emi;
+            bestBank = bank;
+          }
+        });
+
+        // Display results
+        const totalSavings = (currentEMI - lowestEMI) * tenure;
+        
+        document.getElementById('currentEMI').textContent = 
+          `₹${currentEMI.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+        document.getElementById('bestEMI').textContent = 
+          `₹${lowestEMI.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+        document.getElementById('bestBank').textContent = bestBank.BANK;
+        document.getElementById('bestROI').textContent = `${bestBank.ROI}%`;
+        document.getElementById('totalSavings').textContent = 
+          `₹${totalSavings.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('finalResult').style.display = 'block';
+      }, 1500);
+    }
+
+    function startOver() {
+      // Reset all selections
+      selectedCreditScore = null;
+      selectedKhatta = null;
+      selectedCategory = null;
+      
+      // Clear all inputs
+      document.getElementById('loanAmount').value = '';
+      document.getElementById('currentROI').value = '';
+      document.getElementById('tenure').value = '';
+      
+      // Remove selected classes
+      document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+      
+      // Hide all steps and results
+      document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+      document.getElementById('preliminaryResult').style.display = 'none';
+      document.getElementById('finalResult').style.display = 'none';
+      
+      // Show first step
+      document.getElementById('step1').classList.add('active');
+      updateProgress(1);
+    }
+
+    function showError(message) {
+      const errorMsg = document.getElementById('errorMsg');
+      errorMsg.textContent = message;
+      errorMsg.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorMsg').style.display = 'none';
+    }
   </script>
 </body>
 </html>
