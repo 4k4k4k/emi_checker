@@ -81,38 +81,6 @@
       font-size: 20px;
     }
 
-    .credit-options {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .credit-option {
-      padding: 15px;
-      background: #f8f9fa;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.3s ease;
-      font-weight: 500;
-    }
-
-    .credit-option:hover {
-      background: #e8eaf6;
-      border-color: #667eea;
-      transform: translateY(-2px);
-    }
-
-    .credit-option.selected {
-      background: #667eea;
-      color: white;
-      border-color: #667eea;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-    }
-
     .input-group {
       margin-bottom: 25px;
     }
@@ -141,6 +109,13 @@
       border-color: #667eea;
       background: white;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .input-group small {
+      display: block;
+      margin-top: 5px;
+      color: #666;
+      font-size: 13px;
     }
 
     .khatta-options {
@@ -240,6 +215,16 @@
 
     .btn-secondary:hover {
       background: #d0d0d0;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+      color: #333;
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(132, 250, 176, 0.3);
     }
 
     .result-section {
@@ -373,11 +358,49 @@
       display: none;
     }
 
+    .success-msg {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .callback-form {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .callback-form h4 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .thank-you {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .thank-you h2 {
+      color: #667eea;
+      margin-bottom: 20px;
+    }
+
+    .thank-you p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .thank-you .icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+
     @media (max-width: 480px) {
-      .credit-options {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
       .bank-category {
         flex-direction: column;
       }
@@ -398,17 +421,11 @@
 
       <!-- Step 1: Credit Score -->
       <div class="step active" id="step1">
-        <h3>What's your credit score range?</h3>
-        <div class="credit-options" id="creditOptions">
-          <div class="credit-option" data-value="625-650">625-650</div>
-          <div class="credit-option" data-value="651-675">651-675</div>
-          <div class="credit-option" data-value="676-700">676-700</div>
-          <div class="credit-option" data-value="701-725">701-725</div>
-          <div class="credit-option" data-value="726-750">726-750</div>
-          <div class="credit-option" data-value="751-775">751-775</div>
-          <div class="credit-option" data-value="776-800">776-800</div>
-          <div class="credit-option" data-value="801-825">801-825</div>
-          <div class="credit-option" data-value="825+">825+</div>
+        <h3>What's your credit score?</h3>
+        <div class="input-group">
+          <label>Enter your CIBIL score</label>
+          <input type="number" id="creditScore" min="300" max="900" placeholder="e.g., 750" />
+          <small>Your credit score should be between 300 and 900</small>
         </div>
         <div class="btns">
           <button class="btn btn-primary" onclick="nextStep(1)">Continue</button>
@@ -541,7 +558,45 @@
           </div>
         </div>
         <div class="btns">
-          <button class="btn btn-primary" onclick="startOver()">Calculate Again</button>
+          <button class="btn btn-secondary" onclick="startOver()">Calculate Again</button>
+          <button class="btn btn-success" onclick="showCallbackForm()">Get a Call Back</button>
+        </div>
+      </div>
+
+      <!-- Callback Form -->
+      <div class="result-section" id="callbackForm">
+        <div class="callback-form">
+          <h4>Request a Call Back</h4>
+          <p style="text-align: center; color: #666; margin-bottom: 20px;">Our expert will contact you within 24 hours</p>
+          <div class="input-group">
+            <label>Your Name *</label>
+            <input type="text" id="userName" placeholder="Enter your full name" required />
+          </div>
+          <div class="input-group">
+            <label>Email ID *</label>
+            <input type="email" id="userEmail" placeholder="Enter your email" required />
+          </div>
+          <div class="input-group">
+            <label>Phone Number *</label>
+            <input type="tel" id="userPhone" placeholder="Enter 10-digit mobile number" maxlength="10" required />
+          </div>
+          <div class="btns">
+            <button class="btn btn-secondary" onclick="backToResults()">Back</button>
+            <button class="btn btn-primary" onclick="submitCallback()">Submit</button>
+          </div>
+        </div>
+        <div class="error-msg" id="formError"></div>
+        <div class="success-msg" id="formSuccess"></div>
+      </div>
+
+      <!-- Thank You -->
+      <div class="result-section" id="thankYou">
+        <div class="thank-you">
+          <div class="icon">✅</div>
+          <h2>Thank You!</h2>
+          <p>Your request has been submitted successfully.</p>
+          <p>Our loan expert will contact you within 24 hours to help you reduce your EMI.</p>
+          <p style="font-size: 14px; color: #999;">Redirecting to homepage in <span id="countdown">5</span> seconds...</p>
         </div>
       </div>
 
@@ -550,7 +605,10 @@
   </div>
 
   <script>
-    // Embedded bank data from your Excel file (Copy of BRE Servicing 1.xlsx)
+    // Google Apps Script Web App URL - Replace with your deployed URL
+    const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+    
+    // Embedded bank data from your Excel file
     const bankData = [
       {"BANK":"SBI","SCORE MIN":825,"SCORE MAX":900,"ROI":7.5,"PROCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
       {"BANK":"SBI","SCORE MIN":750,"SCORE MAX":824,"ROI":7.7,"PROCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
@@ -622,6 +680,7 @@
     let selectedCreditScore = null;
     let selectedKhatta = null;
     let selectedCategory = null;
+    let calculationData = {}; // Store calculation results
 
     // Setup event listeners on load
     window.onload = function() {
@@ -630,15 +689,6 @@
     };
 
     function setupEventListeners() {
-      // Credit score selection
-      document.querySelectorAll('.credit-option').forEach(option => {
-        option.addEventListener('click', function() {
-          document.querySelectorAll('.credit-option').forEach(o => o.classList.remove('selected'));
-          this.classList.add('selected');
-          selectedCreditScore = this.dataset.value;
-        });
-      });
-
       // Khatta type selection
       document.querySelectorAll('.khatta-option').forEach(option => {
         option.addEventListener('click', function() {
@@ -656,6 +706,11 @@
           selectedCategory = this.dataset.value;
         });
       });
+
+      // Phone number validation
+      document.getElementById('userPhone').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+      });
     }
 
     function updateProgress(step) {
@@ -665,9 +720,13 @@
     }
 
     function nextStep(current) {
-      if (current === 1 && !selectedCreditScore) {
-        showError('Please select your credit score range');
-        return;
+      if (current === 1) {
+        const creditScore = document.getElementById('creditScore').value;
+        if (!creditScore || creditScore < 300 || creditScore > 900) {
+          showError('Please enter a valid credit score between 300 and 900');
+          return;
+        }
+        selectedCreditScore = parseInt(creditScore);
       }
       if (current === 2) {
         const loanAmount = document.getElementById('loanAmount').value;
@@ -716,12 +775,6 @@
       document.getElementById('preliminaryResult').style.display = 'block';
     }
 
-    function getCreditMidpoint(range) {
-      if (range === '825+') return 830;
-      const [min, max] = range.split('-').map(Number);
-      return (min + max) / 2;
-    }
-
     function calculateEMI(principal, rate, months) {
       const monthlyRate = rate / 100 / 12;
       return (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / 
@@ -736,7 +789,7 @@
       }
 
       hideError();
-      const creditScore = getCreditMidpoint(selectedCreditScore);
+      const creditScore = selectedCreditScore;
       const loanAmountInRs = loanAmount * 100000;
       
       // Find best ROI for this credit score across all banks
@@ -789,7 +842,7 @@
         const loanAmount = parseFloat(document.getElementById('loanAmount').value) * 100000;
         const currentROI = parseFloat(document.getElementById('currentROI').value);
         const tenure = parseFloat(document.getElementById('tenure').value) * 12;
-        const creditScore = getCreditMidpoint(selectedCreditScore);
+        const creditScore = selectedCreditScore;
 
         // Calculate current EMI
         const currentEMI = calculateEMI(loanAmount, currentROI, tenure);
@@ -841,7 +894,23 @@
           }
         });
 
-                console.log('Best bank found:', bestBank.BANK, 'with ROI', bestBank.ROI + '%');
+        console.log('Best bank found:', bestBank.BANK, 'with ROI', bestBank.ROI + '%');
+
+        // Store calculation data for form submission
+        calculationData = {
+          creditScore: creditScore,
+          loanAmount: loanAmount / 100000, // Convert back to lakhs
+          currentROI: currentROI,
+          tenure: tenure / 12, // Convert back to years
+          khattaType: document.querySelector('.khatta-option.selected').textContent,
+          bankCategory: document.querySelector('.category-option.selected h4').textContent,
+          currentEMI: currentEMI,
+          bestBank: bestBank.BANK,
+          bestROI: bestBank.ROI,
+          bestEMI: lowestEMI,
+          monthlySavings: currentEMI - lowestEMI,
+          totalSavings: (currentEMI - lowestEMI) * tenure
+        };
 
         // Check if current ROI is already the best
         if (currentROI <= parseFloat(bestBank.ROI)) {
@@ -875,16 +944,120 @@
       }, 1500);
     }
 
+    function showCallbackForm() {
+      document.getElementById('finalResult').style.display = 'none';
+      document.getElementById('callbackForm').style.display = 'block';
+    }
+
+    function backToResults() {
+      document.getElementById('callbackForm').style.display = 'none';
+      document.getElementById('finalResult').style.display = 'block';
+    }
+
+    function submitCallback() {
+      const name = document.getElementById('userName').value.trim();
+      const email = document.getElementById('userEmail').value.trim();
+      const phone = document.getElementById('userPhone').value.trim();
+
+      // Validation
+      if (!name) {
+        showFormError('Please enter your name');
+        return;
+      }
+      if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        showFormError('Please enter a valid email address');
+        return;
+      }
+      if (!phone || phone.length !== 10) {
+        showFormError('Please enter a valid 10-digit phone number');
+        return;
+      }
+
+      hideFormError();
+      
+      // Prepare data for Google Sheets
+      const formData = {
+        timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+        name: name,
+        email: email,
+        phone: phone,
+        creditScore: calculationData.creditScore,
+        loanAmount: calculationData.loanAmount,
+        currentROI: calculationData.currentROI,
+        tenure: calculationData.tenure,
+        khattaType: calculationData.khattaType,
+        bankCategory: calculationData.bankCategory,
+        currentEMI: Math.round(calculationData.currentEMI),
+        recommendedBank: calculationData.bestBank,
+        recommendedROI: calculationData.bestROI,
+        recommendedEMI: Math.round(calculationData.bestEMI),
+        monthlySavings: Math.round(calculationData.monthlySavings),
+        totalSavings: Math.round(calculationData.totalSavings)
+      };
+
+      // Show loading
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('callbackForm').style.display = 'none';
+
+      // Submit to Google Sheets
+      if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+        fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(() => {
+          console.log('Form submitted successfully');
+          showThankYou();
+        })
+        .catch(error => {
+          console.error('Error submitting form:', error);
+          showThankYou(); // Show thank you anyway
+        });
+      } else {
+        console.log('Google Script URL not configured. Form data:', formData);
+        showThankYou();
+      }
+    }
+
+    function showThankYou() {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('thankYou').style.display = 'block';
+      
+      // Countdown and redirect
+      let countdown = 5;
+      const countdownElement = document.getElementById('countdown');
+      
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownElement.textContent = countdown;
+        
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          // Redirect to homepage or specified URL
+          window.location.href = '/'; // Change this to your desired redirect URL
+        }
+      }, 1000);
+    }
+
     function startOver() {
       // Reset all selections
       selectedCreditScore = null;
       selectedKhatta = null;
       selectedCategory = null;
+      calculationData = {};
       
       // Clear all inputs
+      document.getElementById('creditScore').value = '';
       document.getElementById('loanAmount').value = '';
       document.getElementById('currentROI').value = '';
       document.getElementById('tenure').value = '';
+      document.getElementById('userName').value = '';
+      document.getElementById('userEmail').value = '';
+      document.getElementById('userPhone').value = '';
       
       // Remove selected classes
       document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
@@ -893,6 +1066,8 @@
       document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
       document.getElementById('preliminaryResult').style.display = 'none';
       document.getElementById('finalResult').style.display = 'none';
+      document.getElementById('callbackForm').style.display = 'none';
+      document.getElementById('thankYou').style.display = 'none';
       
       // Show first step
       document.getElementById('step1').classList.add('active');
@@ -908,34 +1083,16 @@
     function hideError() {
       document.getElementById('errorMsg').style.display = 'none';
     }
-    function submitToGoogleSheet() {
-  const payload = {
-    creditScore: selectedCreditScore,
-    loanAmount: parseFloat(document.getElementById('loanAmount').value),
-    currentROI: parseFloat(document.getElementById('currentROI').value),
-    tenure: parseFloat(document.getElementById('tenure').value),
-    khattaType: selectedKhatta,
-    bankCategory: selectedCategory,
-    recommendedBank: document.getElementById('bestBank').textContent,
-    bestROI: document.getElementById('bestROI').textContent.replace('%', ''),
-    bestEMI: document.getElementById('bestEMI').textContent.replace(/[₹,()]/g, '').trim(),
-    currentEMI: document.getElementById('currentEMI').textContent.replace(/[₹,]/g, '').trim(),
-    totalSavings: document.getElementById('totalSavings').textContent.replace(/[₹,]/g, '').trim(),
-    monthlySavings: document.getElementById('monthlySavings').textContent.replace(/[₹,]/g, '').trim()
-  };
 
-  fetch('https://script.google.com/macros/s/AKfycbw0f7MUKYzYMfO0GqQmTSHWkixcL3UtmnK_3_0Fr0RgGitqYK2_PMnDSkQTePItcg4x/exec', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: {
-      'Content-Type': 'application/json'
+    function showFormError(message) {
+      const errorMsg = document.getElementById('formError');
+      errorMsg.textContent = message;
+      errorMsg.style.display = 'block';
     }
-  })
-  .then(res => res.json())
-  .then(response => console.log('Success:', response))
-  .catch(error => console.error('Error submitting to Google Sheet:', error));
-}
 
+    function hideFormError() {
+      document.getElementById('formError').style.display = 'none';
+    }
   </script>
 </body>
 </html>
