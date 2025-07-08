@@ -535,6 +535,10 @@
             <h5>Total Savings</h5>
             <div class="value" id="totalSavings">₹0</div>
           </div>
+          <div class="result-card">
+            <h5>Monthly Savings</h5>
+            <div class="value" id="monthlySavings">₹0</div>
+          </div>
         </div>
         <div class="btns">
           <button class="btn btn-primary" onclick="startOver()">Calculate Again</button>
@@ -546,76 +550,73 @@
   </div>
 
   <script>
-    // Embedded bank data from your Excel file
+    // Embedded bank data from your Excel file (Copy of BRE Servicing 1.xlsx)
     const bankData = [
-      {"BANK":"SBI","SCORE MIN":825,"SCORE MAX":900,"ROI":7.5,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"SBI","SCORE MIN":750,"SCORE MAX":824,"ROI":7.7,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"SBI","SCORE MIN":700,"SCORE MAX":749,"ROI":7.8,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"SBI","SCORE MIN":650,"SCORE MAX":699,"ROI":7.9,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"SBI","SCORE MIN":625,"SCORE MAX":649,"ROI":8.5,"PROCCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":825,"SCORE MAX":900,"ROI":7.5,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":750,"SCORE MAX":824,"ROI":7.7,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":700,"SCORE MAX":749,"ROI":7.8,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":650,"SCORE MAX":699,"ROI":7.9,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":625,"SCORE MAX":649,"ROI":8.5,"PROCCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":825,"SCORE MAX":900,"ROI":8,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":750,"SCORE MAX":824,"ROI":8.1,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":700,"SCORE MAX":749,"ROI":8.3,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":650,"SCORE MAX":699,"ROI":8.5,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":625,"SCORE MAX":649,"ROI":8.5,"PROCCESSING FEE":0,"% MODT":1,"A":"A KHATTA","C":"B KHATTA","D":"DC","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":800,"SCORE MAX":900,"ROI":8.2,"PROCCESSING FEE":12500,"% MODT":0.6,"E":"GP PROPERTY","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":750,"SCORE MAX":799,"ROI":8.3,"PROCCESSING FEE":12500,"% MODT":0.6,"E":"GP PROPERTY","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":700,"SCORE MAX":749,"ROI":8.5,"PROCCESSING FEE":12500,"% MODT":0.6,"E":"GP PROPERTY","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"BOB","SCORE MIN":650,"SCORE MAX":699,"ROI":8.7,"PROCCESSING FEE":12500,"% MODT":0.6,"E":"GP PROPERTY","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"AXIS","SCORE MIN":825,"SCORE MAX":900,"ROI":7.85,"PROCCESSING FEE":23600,"% MODT":0.45,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"AXIS","SCORE MIN":750,"SCORE MAX":824,"ROI":8,"PROCCESSING FEE":23600,"% MODT":0.45,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"AXIS","SCORE MIN":700,"SCORE MAX":749,"ROI":8.25,"PROCCESSING FEE":23600,"% MODT":0.45,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"AXIS","SCORE MIN":650,"SCORE MAX":699,"ROI":8.75,"PROCCESSING FEE":23600,"% MODT":0.45,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"ICICI","SCORE MIN":800,"SCORE MAX":900,"ROI":8,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"ICICI","SCORE MIN":750,"SCORE MAX":799,"ROI":8.1,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"ICICI","SCORE MIN":730,"SCORE MAX":749,"ROI":8.25,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"ICICI","SCORE MIN":700,"SCORE MAX":729,"ROI":8.35,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"ICICI","SCORE MIN":0,"SCORE MAX":699,"ROI":9.05,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"ICICI","SCORE MIN":-1,"ROI":8.15,"PROCCESSING FEE":35400,"% MODT":0.5,"E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"KOTAK","SCORE MIN":800,"SCORE MAX":900,"ROI":8.3,"PROCCESSING FEE":14160,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
-      {"BANK":"KOTAK","SCORE MIN":750,"SCORE MAX":799,"ROI":8.35,"PROCCESSING FEE":14160,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
-      {"BANK":"KOTAK","SCORE MIN":700,"SCORE MAX":749,"ROI":8.4,"PROCCESSING FEE":14160,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
-      {"BANK":"KOTAK","SCORE MIN":650,"SCORE MAX":699,"ROI":8.75,"PROCCESSING FEE":14160,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
-      {"BANK":"CANARA","SCORE MIN":720,"SCORE MAX":900,"ROI":7.8,"PROCCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"CANARA","SCORE MIN":700,"SCORE MAX":719,"ROI":8.1,"PROCCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"CANARA","SCORE MIN":650,"SCORE MAX":699,"ROI":8.35,"PROCCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"CANARA","SCORE MIN":625,"SCORE MAX":649,"ROI":8.8,"PROCCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"PNB","SCORE MIN":750,"SCORE MAX":900,"ROI":7.95,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"PNB","SCORE MIN":700,"SCORE MAX":749,"ROI":8.1,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"PNB","SCORE MIN":650,"SCORE MAX":699,"ROI":8.35,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"PNB","SCORE MIN":625,"SCORE MAX":649,"ROI":8.7,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"INDIAN BANK","SCORE MIN":800,"SCORE MAX":900,"ROI":8.3,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"INDIAN BANK","SCORE MIN":750,"SCORE MAX":799,"ROI":8.4,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"INDIAN BANK","SCORE MIN":700,"SCORE MAX":749,"ROI":8.5,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"INDIAN BANK","SCORE MIN":650,"SCORE MAX":699,"ROI":8.6,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"INDIAN BANK","SCORE MIN":625,"SCORE MAX":649,"ROI":8.85,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
-      {"BANK":"HDFC","SCORE MIN":750,"SCORE MAX":900,"ROI":8.25,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"HDFC","SCORE MIN":725,"SCORE MAX":749,"ROI":8.45,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"HDFC","SCORE MIN":700,"SCORE MAX":724,"ROI":8.65,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"HDFC","SCORE MIN":675,"SCORE MAX":699,"ROI":9,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"HDFC","SCORE MIN":650,"SCORE MAX":674,"ROI":9.5,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"HDFC","SCORE MIN":625,"SCORE MAX":649,"ROI":10,"PROCCESSING FEE":11800,"% MODT":0.5,"A":"A KHATTA","F":"NEUTRAL"},
-      {"BANK":"BAJAJ","SCORE MIN":825,"SCORE MAX":900,"ROI":8.3,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"BAJAJ","SCORE MIN":750,"SCORE MAX":824,"ROI":8.35,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"BAJAJ","SCORE MIN":700,"SCORE MAX":749,"ROI":8.5,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"BAJAJ","SCORE MIN":650,"SCORE MAX":699,"ROI":8.65,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"BAJAJ","SCORE MIN":625,"SCORE MAX":649,"ROI":9,"PROCCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"PNB HOUSING","SCORE MIN":750,"SCORE MAX":900,"ROI":8.35,"PROCCESSING FEE":11800,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"PNB HOUSING","SCORE MIN":700,"SCORE MAX":749,"ROI":8.45,"PROCCESSING FEE":11800,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"PNB HOUSING","SCORE MIN":650,"SCORE MAX":699,"ROI":8.65,"PROCCESSING FEE":11800,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"PNB HOUSING","SCORE MIN":625,"SCORE MAX":649,"ROI":8.9,"PROCCESSING FEE":11800,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"ICICI HOME FINANCE","SCORE MIN":650,"SCORE MAX":900,"ROI":9.25,"PROCCESSING FEE":17700,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"ICICI HOME FINANCE","SCORE MIN":625,"SCORE MAX":649,"ROI":9.75,"PROCCESSING FEE":17700,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"LIC HFL","SCORE MIN":700,"SCORE MAX":900,"ROI":8.75,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"LIC HFL","SCORE MIN":650,"SCORE MAX":699,"ROI":9,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"LIC HFL","SCORE MIN":625,"SCORE MAX":649,"ROI":9.5,"PROCCESSING FEE":5900,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"SHUBHAM HOUSING","SCORE MIN":625,"SCORE MAX":900,"ROI":10.75,"PROCCESSING FEE":0,"% MODT":2,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
-      {"BANK":"SHUBHAM HOUSING","SCORE MIN":0,"SCORE MAX":624,"ROI":11.5,"PROCCESSING FEE":0,"% MODT":2,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"}
+      {"BANK":"SBI","SCORE MIN":825,"SCORE MAX":900,"ROI":7.5,"PROCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"SBI","SCORE MIN":750,"SCORE MAX":824,"ROI":7.7,"PROCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"SBI","SCORE MIN":700,"SCORE MAX":749,"ROI":7.8,"PROCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"SBI","SCORE MIN":650,"SCORE MAX":699,"ROI":7.9,"PROCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"SBI","SCORE MIN":625,"SCORE MAX":649,"ROI":8.5,"PROCESSING FEE":42300,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":825,"SCORE MAX":900,"ROI":7.5,"PROCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":800,"SCORE MAX":824,"ROI":7.8,"PROCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":751,"SCORE MAX":799,"ROI":7.9,"PROCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":726,"SCORE MAX":750,"ROI":8.1,"PROCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BOB","SCORE MIN":701,"SCORE MAX":725,"ROI":8.2,"PROCESSING FEE":34000,"% MODT":0.6,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"CANARA","SCORE MIN":800,"SCORE MAX":900,"ROI":7.8,"PROCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"CANARA","SCORE MIN":750,"SCORE MAX":799,"ROI":8,"PROCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"CANARA","SCORE MIN":700,"SCORE MAX":749,"ROI":8.25,"PROCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"CANARA","SCORE MIN":650,"SCORE MAX":699,"ROI":8.5,"PROCESSING FEE":2950,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"PNB","SCORE MIN":800,"SCORE MAX":900,"ROI":7.95,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"PNB","SCORE MIN":700,"SCORE MAX":799,"ROI":8.2,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"PNB","SCORE MIN":650,"SCORE MAX":699,"ROI":8.5,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"UNION BANK","SCORE MIN":750,"SCORE MAX":900,"ROI":8,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"UNION BANK","SCORE MIN":700,"SCORE MAX":749,"ROI":8.25,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"UNION BANK","SCORE MIN":650,"SCORE MAX":699,"ROI":8.45,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"HDFC","SCORE MIN":800,"SCORE MAX":900,"ROI":7.6,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","D":"DC","F":"NEUTRAL"},
+      {"BANK":"HDFC","SCORE MIN":750,"SCORE MAX":799,"ROI":7.8,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","D":"DC","F":"NEUTRAL"},
+      {"BANK":"HDFC","SCORE MIN":700,"SCORE MAX":749,"ROI":8,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","D":"DC","F":"NEUTRAL"},
+      {"BANK":"HDFC","SCORE MIN":625,"SCORE MAX":699,"ROI":8.25,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","D":"DC","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":800,"SCORE MAX":900,"ROI":8,"PROCESSING FEE":20900,"% MODT":0.5,"% ADDNL":0.25,"A":"A KHATTA","B":"E KHATTA(11/A)","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":750,"SCORE MAX":799,"ROI":8.1,"PROCESSING FEE":20900,"% MODT":0.5,"% ADDNL":0.25,"A":"A KHATTA","B":"E KHATTA(11/A)","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":700,"SCORE MAX":749,"ROI":8.25,"PROCESSING FEE":20900,"% MODT":0.5,"% ADDNL":0.25,"A":"A KHATTA","B":"E KHATTA(11/A)","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI","SCORE MIN":650,"SCORE MAX":699,"ROI":8.5,"PROCESSING FEE":20900,"% MODT":0.5,"% ADDNL":0.25,"A":"A KHATTA","B":"E KHATTA(11/A)","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"KOTAK","SCORE MIN":800,"SCORE MAX":900,"ROI":8.05,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"KOTAK","SCORE MIN":750,"SCORE MAX":799,"ROI":8.15,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"KOTAK","SCORE MIN":700,"SCORE MAX":749,"ROI":8.3,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"KOTAK","SCORE MIN":650,"SCORE MAX":699,"ROI":8.55,"PROCESSING FEE":10000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"AXIS","SCORE MIN":750,"SCORE MAX":900,"ROI":7.95,"PROCESSING FEE":20000,"% MODT":0.45,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"AXIS","SCORE MIN":700,"SCORE MAX":749,"ROI":8.1,"PROCESSING FEE":20000,"% MODT":0.45,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"AXIS","SCORE MIN":650,"SCORE MAX":699,"ROI":8.35,"PROCESSING FEE":20000,"% MODT":0.45,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"AXIS","SCORE MIN":625,"SCORE MAX":649,"ROI":8.75,"PROCESSING FEE":20000,"% MODT":0.45,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL"},
+      {"BANK":"INDIAN BANK","SCORE MIN":800,"SCORE MAX":900,"ROI":8.05,"PROCESSING FEE":5000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":750,"SCORE MAX":799,"ROI":8.2,"PROCESSING FEE":5000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":700,"SCORE MAX":749,"ROI":8.35,"PROCESSING FEE":5000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":650,"SCORE MAX":699,"ROI":8.55,"PROCESSING FEE":5000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"INDIAN BANK","SCORE MIN":625,"SCORE MAX":649,"ROI":8.8,"PROCESSING FEE":5000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","F":"NEUTRAL","G":"NATIONALISED"},
+      {"BANK":"BAJAJ","SCORE MIN":825,"SCORE MAX":900,"ROI":7.75,"PROCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":750,"SCORE MAX":824,"ROI":8,"PROCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":700,"SCORE MAX":749,"ROI":8.25,"PROCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":650,"SCORE MAX":699,"ROI":8.5,"PROCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"BAJAJ","SCORE MIN":625,"SCORE MAX":649,"ROI":8.75,"PROCESSING FEE":0,"% MODT":0.99,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"PNB HOUSING","SCORE MIN":750,"SCORE MAX":900,"ROI":8.15,"PROCESSING FEE":10000,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"PNB HOUSING","SCORE MIN":700,"SCORE MAX":749,"ROI":8.35,"PROCESSING FEE":10000,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"PNB HOUSING","SCORE MIN":650,"SCORE MAX":699,"ROI":8.55,"PROCESSING FEE":10000,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"PNB HOUSING","SCORE MIN":625,"SCORE MAX":649,"ROI":8.8,"PROCESSING FEE":10000,"% MODT":0.5,"% ADDNL":0.2,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI HOME FINANCE","SCORE MIN":700,"SCORE MAX":900,"ROI":9,"PROCESSING FEE":15000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI HOME FINANCE","SCORE MIN":650,"SCORE MAX":699,"ROI":9.25,"PROCESSING FEE":15000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"ICICI HOME FINANCE","SCORE MIN":625,"SCORE MAX":649,"ROI":9.5,"PROCESSING FEE":15000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"LIC HFL","SCORE MIN":700,"SCORE MAX":900,"ROI":8.75,"PROCESSING FEE":5000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"LIC HFL","SCORE MIN":650,"SCORE MAX":699,"ROI":9,"PROCESSING FEE":5000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"LIC HFL","SCORE MIN":625,"SCORE MAX":649,"ROI":9.5,"PROCESSING FEE":5000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"HOME FIRST","SCORE MIN":700,"SCORE MAX":900,"ROI":9.25,"PROCESSING FEE":8000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"HOME FIRST","SCORE MIN":650,"SCORE MAX":699,"ROI":9.5,"PROCESSING FEE":8000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"HOME FIRST","SCORE MIN":625,"SCORE MAX":649,"ROI":9.75,"PROCESSING FEE":8000,"% MODT":0.5,"A":"A KHATTA","B":"E KHATTA(11/A)","C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"FEDFINA","SCORE MIN":650,"SCORE MAX":900,"ROI":10.5,"PROCESSING FEE":0,"% MODT":1.5,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"FEDFINA","SCORE MIN":625,"SCORE MAX":649,"ROI":11,"PROCESSING FEE":0,"% MODT":1.5,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"FEDFINA","SCORE MIN":0,"SCORE MAX":624,"ROI":11.5,"PROCESSING FEE":0,"% MODT":1.5,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"SHUBHAM HOUSING","SCORE MIN":650,"SCORE MAX":900,"ROI":10.75,"PROCESSING FEE":0,"% MODT":2,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"SHUBHAM HOUSING","SCORE MIN":625,"SCORE MAX":649,"ROI":11.25,"PROCESSING FEE":0,"% MODT":2,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"},
+      {"BANK":"SHUBHAM HOUSING","SCORE MIN":0,"SCORE MAX":624,"ROI":11.75,"PROCESSING FEE":0,"% MODT":2,"C":"B KHATTA","D":"DC","E":"GP PROPERTY","F":"NEUTRAL"}
     ];
     
     let selectedCreditScore = null;
@@ -810,6 +811,15 @@
           return true;
         });
 
+        console.log('Filtering criteria:', {
+          creditScore,
+          selectedKhatta,
+          selectedCategory,
+          currentROI
+        });
+        console.log('Eligible banks found:', eligibleBanks.length);
+        console.log('Banks:', eligibleBanks.map(b => `${b.BANK} (${b.ROI}%)`));
+
         if (eligibleBanks.length === 0) {
           showError('No banks found matching your criteria. Try selecting "Neutral" for more options.');
           document.getElementById('loader').style.display = 'none';
@@ -824,23 +834,41 @@
         eligibleBanks.forEach(bank => {
           const roi = parseFloat(bank.ROI);
           const emi = calculateEMI(loanAmount, roi, tenure);
+          console.log(`${bank.BANK}: ROI ${roi}%, EMI ₹${emi.toFixed(0)}`);
           if (emi < lowestEMI) {
             lowestEMI = emi;
             bestBank = bank;
           }
         });
 
-        // Display results
-        const totalSavings = (currentEMI - lowestEMI) * tenure;
-        
-        document.getElementById('currentEMI').textContent = 
-          `₹${currentEMI.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
-        document.getElementById('bestEMI').textContent = 
-          `₹${lowestEMI.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
-        document.getElementById('bestBank').textContent = bestBank.BANK;
-        document.getElementById('bestROI').textContent = `${bestBank.ROI}%`;
-        document.getElementById('totalSavings').textContent = 
-          `₹${totalSavings.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+                console.log('Best bank found:', bestBank.BANK, 'with ROI', bestBank.ROI + '%');
+
+        // Check if current ROI is already the best
+        if (currentROI <= parseFloat(bestBank.ROI)) {
+          document.getElementById('currentEMI').textContent = 
+            `₹${currentEMI.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+          document.getElementById('bestEMI').textContent = 
+            `₹${currentEMI.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} (You already have the best rate!)`;
+          document.getElementById('bestBank').textContent = 'Your current bank';
+          document.getElementById('bestROI').textContent = `${currentROI}%`;
+          document.getElementById('totalSavings').textContent = '₹0';
+          document.getElementById('monthlySavings').textContent = '₹0';
+        } else {
+          // Display results with savings
+          const totalSavings = (currentEMI - lowestEMI) * tenure;
+          const monthlySavings = currentEMI - lowestEMI;
+          
+          document.getElementById('currentEMI').textContent = 
+            `₹${currentEMI.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+          document.getElementById('bestEMI').textContent = 
+            `₹${lowestEMI.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+          document.getElementById('bestBank').textContent = bestBank.BANK;
+          document.getElementById('bestROI').textContent = `${bestBank.ROI}%`;
+          document.getElementById('totalSavings').textContent = 
+            `₹${totalSavings.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+          document.getElementById('monthlySavings').textContent = 
+            `₹${monthlySavings.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+        }
 
         document.getElementById('loader').style.display = 'none';
         document.getElementById('finalResult').style.display = 'block';
